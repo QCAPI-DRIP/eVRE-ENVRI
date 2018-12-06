@@ -104,6 +104,6 @@ services:
     
 
 volumes:
-  #virtuoso-data:
+  virtuoso-data:
   h2-data:
   #mongo-data:

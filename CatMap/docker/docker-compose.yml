@@ -31,7 +31,7 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-            replicas: 2
+            replicas: 1
         environment:
             RABBIT_HOST: rabbit
             RABBIT_PORT: 5672
@@ -104,12 +104,12 @@ services:
         #volumes:
             #- fuseki-data:/fuseki           
             
-    influx:
-        image: influxdb
-        environment:
-            INFLUXDB_DB: mydb
-        volumes:
-            - influx:/var/lib/influxdb
+    #influx:
+        #image: influxdb
+        #environment:
+            #INFLUXDB_DB: mydb
+        #volumes:
+            #- influx:/var/lib/influxdb
                     
     #rabbit-reporter :
         #image: alogo53/rabbit-metrics-reporter
@@ -126,24 +126,24 @@ services:
             #- rabbit
             #- influx
             
-    grafana:
-        image: grafana/grafana
-        environment:
-            DS_NAME: InfluxDB
-            DS_TYPE: InfluxDB
-            DS_ACCESS: proxy
-            DS_URL: http://influx:8086
-            DS_DB: cadvisor
-        ports:
-            - 3000:3000
-        volumes:
-            - grafana:/var/lib/grafana
-        depends_on:
-            - influx
-        deploy:
-            replicas: 1
-        depends_on:
-            - influx    
+    #grafana:
+        #image: grafana/grafana
+        #environment:
+            #DS_NAME: InfluxDB
+            #DS_TYPE: InfluxDB
+            #DS_ACCESS: proxy
+            #DS_URL: http://influx:8086
+            #DS_DB: cadvisor
+        #ports:
+            #- 3000:3000
+        #volumes:
+            #- grafana:/var/lib/grafana
+        #depends_on:
+            #- influx
+        #deploy:
+            #replicas: 1
+        #depends_on:
+            #- influx    
             
     #chronograf:
         #image: chronograf
@@ -166,27 +166,26 @@ services:
             #- 9092:9092
       
                     
-    cadvisor:
-        image: google/cadvisor
-        #ports:
-            #- 0.0.0.0:8080:8080
-        hostname: '{{.Node.ID}}'
-        command: -logtostderr -docker_only -storage_driver=influxdb -storage_driver_db=mydb -storage_driver_host=influx:8086
-        volumes:
-            - /:/rootfs:ro
-            - /var/run:/var/run:rw
-            - /sys:/sys:ro
-            - /var/lib/docker/:/var/lib/docker:ro
-        depends_on:
-            - influx
-        deploy:
-            mode: global           
+    #cadvisor:
+        #image: google/cadvisor
+        ##ports:
+            ##- 0.0.0.0:8080:8080
+        #hostname: '{{.Node.ID}}'
+        #command: -logtostderr -docker_only -storage_driver=influxdb -storage_driver_db=mydb -storage_driver_host=influx:8086
+        #volumes:
+            #- /:/rootfs:ro
+            #- /var/run:/var/run:rw
+            #- /sys:/sys:ro
+            #- /var/lib/docker/:/var/lib/docker:ro
+        #depends_on:
+            #- influx
+        #deploy:
+            #mode: global           
               
             
                                 
 volumes:
-  influx:
-  grafana:
+  #influx:
+  #grafana:
   webdav:
-  fuseki-data:
     
