@@ -31,28 +31,28 @@ public class Util {
     }
 
     public static boolean urlExists(String URLName) {
-        try {
-            HttpURLConnection.setFollowRedirects(true);
-            //        HttpURLConnection.setInstanceFollowRedirects(false)
-            HttpURLConnection con
-                    = (HttpURLConnection) new URL(URLName).openConnection();
-            con.setInstanceFollowRedirects(true);
-            con.setRequestMethod("HEAD");
-            con.setConnectTimeout(6000);
-            int code = con.getResponseCode();
-
-            if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-                Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
-                return false;
-            }
-
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
-            return false;
-        } catch (IOException ex) {
-            Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
-            return false;
-        }
+//        try {
+//            HttpURLConnection.setFollowRedirects(true);
+//            //        HttpURLConnection.setInstanceFollowRedirects(false)
+//            HttpURLConnection con
+//                    = (HttpURLConnection) new URL(URLName).openConnection();
+//            con.setInstanceFollowRedirects(true);
+//            con.setRequestMethod("HEAD");
+//            con.setConnectTimeout(6000);
+//            int code = con.getResponseCode();
+//
+//            if (code == HttpURLConnection.HTTP_NOT_FOUND) {
+//                Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
+//                return false;
+//            }
+//
+//        } catch (MalformedURLException ex) {
+//            Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
+//            return false;
+//        } catch (IOException ex) {
+//            Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: false");
+//            return false;
+//        }
         Logger.getLogger(Util.class.getName()).log(Level.INFO, "URLName: " + URLName + " exitsts: true");
         return true;
     }
