@@ -45,13 +45,6 @@ services:
         deploy:
             replicas: 1 
             
-    elk:
-        image: sebp/elk
-        ports:
-            - "5601:5601"
-            #- "9200:9200"
-            #- "5044:5044"
-            
     service:
         image: eliaskhaldi/my_image
         ports:
