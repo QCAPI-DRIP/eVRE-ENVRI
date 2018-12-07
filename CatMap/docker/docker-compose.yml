@@ -31,7 +31,7 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-            replicas: 1
+            replicas: 2
         environment:
             RABBIT_HOST: rabbit
             RABBIT_PORT: 5672
