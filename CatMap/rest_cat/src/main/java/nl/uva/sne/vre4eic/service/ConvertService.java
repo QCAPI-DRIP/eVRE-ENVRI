@@ -60,11 +60,11 @@ public class ConvertService {
 //            String queueName = path.substring(path.lastIndexOf('/') + 1);
             String queueName = "metadata_records";
             ExportDocTask task = new ExportDocTask(catalogueURL, connectionFactory.getRabbitConnectionFactory(), queueName, mappingURL, generatorURL, limit, exportID);
+            task.setMeterRegistry(meterRegistry);
             convertTask = exec.submit(task);
             taskMap.put(taskID, convertTask);
 
-            Timer timer = meterRegistry.timer("export.doc.task.start");
-            timer.recordCallable(task);
+//            Timer timer = meterRegistry.timer("export.doc.task." + catalogueURL);
         }
         ProcessingStatus process = new ProcessingStatus();
         process.setCatalogueURL(new URL(catalogueURL));
@@ -93,10 +93,6 @@ public class ConvertService {
         return sardine.list(webdavURL);
     }
 
-    
-
-    
-
     public String getCatalogueType(String catalogueURL) throws MalformedURLException, InterruptedException {
         if (Util.isCKAN(catalogueURL)) {
             return "CKAN";
@@ -107,12 +103,6 @@ public class ConvertService {
 
         return null;
     }
-
-   
-
-   
-
-    
 
     public Integer countRDFRecords(String catalogueURL, String datasetName) {
         String query = "SELECT (COUNT(*) AS ?count) WHERE { ?subject ?predicate ?object}";

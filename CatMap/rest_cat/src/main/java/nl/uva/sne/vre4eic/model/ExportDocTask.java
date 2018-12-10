@@ -15,8 +15,10 @@ import gr.forth.ics.isl.exporter.CatalogueExporter;
 import gr.forth.ics.isl.exporter.D4ScienceExporter;
 import gr.forth.ics.isl.exporter.OGCCSWExporter;
 import gr.forth.ics.isl.util.XML;
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -38,6 +40,7 @@ import static nl.uva.sne.vre4eic.util.Util.isCSW;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -52,8 +55,9 @@ public class ExportDocTask implements Callable<String> {
 
 //    @Autowired
 //    MetricsEndpoint endpoint;
-    @Autowired
-    MeterRegistry meterRegistry;
+//    @Autowired
+    private MeterRegistry meterRegistry;
+
     private final String queue;
     private final String mappingURL;
     private final String generatorURL;
@@ -76,6 +80,7 @@ public class ExportDocTask implements Callable<String> {
     private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
 
         try {
+            long start = System.currentTimeMillis();
             CatalogueExporter exporter = getExporter(catalogueURL);
             if (this.limit != null && this.limit > -1) {
                 exporter.setLimit(limit);
@@ -122,8 +127,10 @@ public class ExportDocTask implements Callable<String> {
                     Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
 //                this.recordsCounter.increment();
-            }
 
+            }
+            long elapsed = System.currentTimeMillis() - start;
+            System.err.println("elapsed: " + elapsed);
 //            Set<String> names = endpoint.listNames().getNames();
 //        endpoint.metric(catalogueURL, list);
         } catch (IOException ex) {
@@ -143,13 +150,19 @@ public class ExportDocTask implements Callable<String> {
     }
 
     @Override
+//    @Timed
     public String call() throws Exception {
-//        List<Meter> m = meterRegistry.getMeters();
-//        System.err.println(m);
-//        Timer.Sample sample = Timer.start(this.meterRegistry);
+        Timer.Sample timer = Timer.start(this.meterRegistry);
         exportDocuments(this.catalogueURL, this.exportID);
-//        sample.stop(this.meterRegistry.timer("export.task.timer." + exportID, "response", "FINISHED"));
+        timer.stop(meterRegistry.timer("export.doc.task." + catalogueURL, "response", "FINISHED"));
         return null;
+    }
+
+    /**
+     * @param meterRegistry the meterRegistry to set
+     */
+    public void setMeterRegistry(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
     }
 
 }
