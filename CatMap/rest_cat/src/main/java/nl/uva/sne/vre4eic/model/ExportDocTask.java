@@ -153,8 +153,10 @@ public class ExportDocTask implements Callable<String> {
 //    @Timed
     public String call() throws Exception {
         Timer.Sample timer = Timer.start(this.meterRegistry);
+        timer.stop(meterRegistry.timer(this.getClass().getName()+ "." + this.exportID, "response", "START"));
+        timer = Timer.start(this.meterRegistry);
         exportDocuments(this.catalogueURL, this.exportID);
-        timer.stop(meterRegistry.timer("export.doc.task." + catalogueURL, "response", "FINISHED"));
+        timer.stop(meterRegistry.timer(this.getClass().getName()+"." + exportID, "response", "FINISHED"));
         return null;
     }
 

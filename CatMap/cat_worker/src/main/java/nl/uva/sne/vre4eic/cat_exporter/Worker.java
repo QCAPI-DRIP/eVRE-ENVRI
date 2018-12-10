@@ -14,6 +14,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.impl.MicrometerMetricsCollector;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +28,11 @@ import org.xml.sax.SAXException;
 import eu.delving.x3ml.X3MLEngine;
 import eu.delving.x3ml.X3MLGeneratorPolicy;
 import eu.delving.x3ml.engine.Generator;
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.influx.InfluxConfig;
+import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -76,10 +82,10 @@ public class Worker {
     public void consume() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitMQHost);
-//        MeterRegistry registry = new InfluxMeterRegistry(InfluxConfig.DEFAULT, Clock.SYSTEM);
+        MeterRegistry meterRegistry = new InfluxMeterRegistry(InfluxConfig.DEFAULT, Clock.SYSTEM);
 //
-//        MicrometerMetricsCollector metricsCollector = new MicrometerMetricsCollector(registry);
-//        factory.setMetricsCollector(metricsCollector);
+        MicrometerMetricsCollector metricsCollector = new MicrometerMetricsCollector(meterRegistry);
+        factory.setMetricsCollector(metricsCollector);
 
         final Connection connection = factory.newConnection();
         final Channel channel = connection.createChannel();
@@ -91,7 +97,7 @@ public class Worker {
         final Consumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException, FileNotFoundException {
-
+                Timer.Sample timer = Timer.start(meterRegistry);
                 byte[] decodedBytes = Base64.decodeBase64(body);
                 String message = new String(decodedBytes, "UTF-8");
                 JSONObject jObject = new JSONObject(message);
@@ -155,6 +161,7 @@ public class Worker {
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
 
                     }
+                    timer.stop(meterRegistry.timer(this.getClass().getName() + "." + exportID, "response", "FINISHED"));
 
                 } catch (IOException | ParserConfigurationException | SAXException ex) {
                     if (ex instanceof org.xml.sax.SAXParseException) {

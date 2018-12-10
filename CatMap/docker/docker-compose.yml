@@ -7,57 +7,72 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure      
+        ports:
+            - "15672:15672"
+            - "5671:5671"
+            - "15671:15671"
+            - "5672:5672"
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.5'
+                    memory: 300M
+                reservations:
+                    cpus: '0.2'
+                    memory: 200M
+            
+            
                                 
-    rest-cat:
-        image: rest-cat
-        deploy:
-            restart_policy:
-                condition: on-failure
-        environment:
-            RABBIT_HOST: rabbit
-            RABBIT_PORT: 5672
-            RABBIT_USERNAME: guest
-            RABBIT_PASSWORD: guest
-            INFLUX_URI: http://influx:8086
-            WEBDAV_HOST: webdav            
-        ports:
-            - 8083:8080      
-        depends_on:
-            - rabbit          
-            - influx          
+    #rest-cat:
+        #image: rest-cat
+        #deploy:
+            #restart_policy:
+                #condition: on-failure
+        #environment:
+            #RABBIT_HOST: rabbit
+            #RABBIT_PORT: 5672
+            #RABBIT_USERNAME: guest
+            #RABBIT_PASSWORD: guest
+            #INFLUX_URI: http://influx:8086
+            #WEBDAV_HOST: webdav            
+        #ports:
+            #- 8083:8080      
+        #depends_on:
+            #- rabbit          
+            #- influx          
             
-    cat-worker:
-        image: cat-worker
-        deploy:
-            restart_policy:
-                condition: on-failure
-            replicas: 2
-        environment:
-            RABBIT_HOST: rabbit
-            RABBIT_PORT: 5672
-            RABBIT_USERNAME: guest
-            RABBIT_PASSWORD: guest
-            INFLUX_URI: http://influx:8086
-            WEBDAV_HOST: webdav
-            WEBDAV_USERNAME: user
-            WEBDAV_PASSWORD: resu      
-        depends_on:
-            - rabbit   
-            - webdav
+    #cat-worker:
+        #image: cat-worker
+        #deploy:
+            #restart_policy:
+                #condition: on-failure
+            #replicas: 1
+        #environment:
+            #RABBIT_HOST: rabbit
+            #RABBIT_PORT: 5672
+            #RABBIT_USERNAME: guest
+            #RABBIT_PASSWORD: guest
+            #INFLUX_URI: http://influx:8086
+            #WEBDAV_HOST: webdav
+            #WEBDAV_USERNAME: user
+            #WEBDAV_PASSWORD: resu      
+        #depends_on:
+            #- rabbit   
+            #- webdav
             
-    prise:
-        image: prise
-        environment:
-            RABBIT_HOST: "rabbit"
-            RABBIT_PORT: "5672"
-            RABBIT_USERNAME: "guest"
-            RABBIT_PASSWORD: "guest"
-            INFLUX_URI: "http://influx:8086"
-            WF_REPO_URL: "http://drip.vlan400.uvalight.net"
-            PROV_REPO_URL: "http://drip.vlan400.uvalight.net"
-            LOG_REPO_URL: "http://drip.vlan400.uvalight.net"
-        ports:
-            - "8084:8080"
+    #prise:
+        #image: prise
+        #environment:
+            #RABBIT_HOST: "rabbit"
+            #RABBIT_PORT: "5672"
+            #RABBIT_USERNAME: "guest"
+            #RABBIT_PASSWORD: "guest"
+            #INFLUX_URI: "http://influx:8086"
+            #WF_REPO_URL: "http://drip.vlan400.uvalight.net"
+            #PROV_REPO_URL: "http://drip.vlan400.uvalight.net"
+            #LOG_REPO_URL: "http://drip.vlan400.uvalight.net"
+        #ports:
+            #- "8084:8080"
             
             
     #pylog2prov:
@@ -90,7 +105,15 @@ services:
             restart_policy:
                 condition: on-failure
         volumes:
-            - webdav:/var/www             
+            - webdav:/var/www     
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.1'
+                    memory: 50M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M            
             
     #jena-fuseki: 
         #image: stain/jena-fuseki
@@ -104,12 +127,23 @@ services:
         #volumes:
             #- fuseki-data:/fuseki           
             
-    #influx:
-        #image: influxdb
-        #environment:
-            #INFLUXDB_DB: mydb
+    influx:
+        image: influxdb
+        environment:
+            INFLUXDB_DB: mydb
         #volumes:
             #- influx:/var/lib/influxdb
+        ports:
+            - "8086:8086"
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.1'
+                    memory: 100M
+                reservations:
+                    cpus: '0.01'
+                    memory: 40M                
+            
                     
     #rabbit-reporter :
         #image: alogo53/rabbit-metrics-reporter
@@ -145,13 +179,21 @@ services:
         #depends_on:
             #- influx    
             
-    #chronograf:
-        #image: chronograf
-        #ports:
-            #- 8888:8888
-        #command: chronograf --influxdb-url=http://influx:8086
-        #depends_on:
-            #- influx
+    chronograf:
+        image: chronograf
+        ports:
+            - 8888:8888
+        command: chronograf --influxdb-url=http://influx:8086
+        depends_on:
+            - influx
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.1'
+                    memory: 50M
+                reservations:
+                    cpus: '0.01'
+                    memory: 20M                
 
     #kapacitor:
         #image: kapacitor
