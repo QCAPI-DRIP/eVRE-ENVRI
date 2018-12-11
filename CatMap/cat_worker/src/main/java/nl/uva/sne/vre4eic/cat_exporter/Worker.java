@@ -30,17 +30,32 @@ import eu.delving.x3ml.X3MLGeneratorPolicy;
 import eu.delving.x3ml.engine.Generator;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.TimeZone;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
@@ -53,17 +68,9 @@ public class Worker {
     private String webdavUser;
     private String webdavPass;
 
-//        private enum outputFormat {
-//        RDF_XML,
-//        NTRIPLES,
-//        TURTLE
-//    }
-//
-//    private enum outputStream {
-//        SYSTEM_OUT,
-//        FILE,
-//        DISABLED
-//    }
+    TimeZone tz = TimeZone.getTimeZone("UTC");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
+
     public Worker(String rabbitMQHost, String webdavHost, String webdavUser, String webdavPass, String taskQeueName, String output) throws IOException {
         this.taskQeueName = taskQeueName;
         this.rabbitMQHost = rabbitMQHost;
@@ -75,7 +82,7 @@ public class Worker {
             this.webdavUser = webdavUser;
             this.webdavPass = webdavPass;
         }
-
+        df.setTimeZone(tz);
         Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Consuming from qeue: {0}", taskQeueName);
     }
 
@@ -92,19 +99,18 @@ public class Worker {
 
         channel.queueDeclare(taskQeueName, true, false, false, null);
 
-        channel.basicQos(1);
-
         final Consumer consumer = new DefaultConsumer(channel) {
+
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException, FileNotFoundException {
-                Timer.Sample timer = Timer.start(meterRegistry);
+                Timer.Sample handleDeliveryTimer = Timer.start(meterRegistry);
                 byte[] decodedBytes = Base64.decodeBase64(body);
                 String message = new String(decodedBytes, "UTF-8");
                 JSONObject jObject = new JSONObject(message);
                 File mapping = null;
                 File generator = null;
                 String ckanRecordID = null;
-//                Logger.getLogger(Worker.class.getName()).log(Level.INFO, "message: {0}", message);
+
                 try {
                     byte[] mappingData = getBytes(new URL(jObject.getString("mappingURL")));
                     byte[] generatorData = getBytes(new URL(jObject.getString("generatorURL")));
@@ -116,6 +122,10 @@ public class Worker {
                     FileUtils.writeByteArrayToFile(generator, generatorData);
                     String xmlCkan = jObject.getString("metadata_record");
                     ckanRecordID = jObject.getString("record_id");
+                    int recordSize = jObject.getInt("records_size");
+                    int messageCount = jObject.getInt("message_count");
+                    String catalogueURL = jObject.getString("source_catalogue_url");
+
                     X3MLEngine.Output rdf = convert(xmlCkan, mapping, generator);
 //                    Logger.getLogger(Worker.class.getName()).log(Level.INFO, "rdf: {0}", rdf);
 
@@ -124,6 +134,14 @@ public class Worker {
 
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
+                    int numOfConsumers = getNumberOfConsumers(taskQeueName, "http://" + rabbitMQHost + ":15672/api/consumers/%2F", "guest", "guest");
+                    Collection<Tag> tags = new ArrayList<>();
+                    tags.add(Tag.of("source", catalogueURL));
+                    tags.add(Tag.of("mapping.name", mappingName));
+                    tags.add(Tag.of("exportID", exportID));
+                    tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
+                    tags.add(Tag.of("records.size", String.valueOf(recordSize)));
+
                     String webdavFolder = mappingName;
                     if (exportID != null) {
                         webdavFolder = mappingName + "/" + exportID;
@@ -161,7 +179,8 @@ public class Worker {
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
 
                     }
-                    timer.stop(meterRegistry.timer(this.getClass().getName() + "." + exportID, "response", "FINISHED"));
+
+                    handleDeliveryTimer.stop(meterRegistry.timer("handleDelivery." + Worker.class.getName(), tags));
 
                 } catch (IOException | ParserConfigurationException | SAXException ex) {
                     if (ex instanceof org.xml.sax.SAXParseException) {
@@ -230,6 +249,36 @@ public class Worker {
             }
         }
         return data.toByteArray();
+    }
+
+    private int getNumberOfConsumers(String taskQeueName, String rabbitAPIURL, String username, String password) throws MalformedURLException, IOException {
+        StringBuilder result = new StringBuilder();
+        URL url = new URL(rabbitAPIURL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        String userpassword = username + ":" + password;
+
+        byte[] encodedBytes = Base64.encodeBase64(userpassword.getBytes());
+        conn.setRequestProperty("Authorization", "Basic "
+                + new String(encodedBytes));
+
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line;
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+        }
+        int consumerCount = 0;
+        JSONArray resp = new JSONArray(result.toString());
+        Iterator<Object> iter = resp.iterator();
+        while (iter.hasNext()) {
+            JSONObject obj = (JSONObject) iter.next();
+            if (obj.getJSONObject("queue").getString("name").equals(taskQeueName)) {
+                consumerCount++;
+            }
+        }
+        return consumerCount;
     }
 
 }

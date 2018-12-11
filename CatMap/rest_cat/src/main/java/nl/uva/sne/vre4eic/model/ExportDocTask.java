@@ -18,12 +18,20 @@ import gr.forth.ics.isl.util.XML;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -38,6 +46,7 @@ import javax.xml.transform.stream.StreamResult;
 import static nl.uva.sne.vre4eic.util.Util.isCKAN;
 import static nl.uva.sne.vre4eic.util.Util.isCSW;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -65,6 +74,9 @@ public class ExportDocTask implements Callable<String> {
     private final String exportID;
 //    private final Counter recordsCounter;
 
+    TimeZone tz = TimeZone.getTimeZone("UTC");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
+
     public ExportDocTask(String catalogueURL, ConnectionFactory factory, String queue, String mappingURL, String generatorURL, Integer limit, String exportID) {
         this.catalogueURL = catalogueURL;
         this.factory = factory;
@@ -73,6 +85,7 @@ public class ExportDocTask implements Callable<String> {
         this.generatorURL = generatorURL;
         this.limit = limit;
         this.exportID = exportID;
+        df.setTimeZone(tz);
 
 //        this.recordsCounter = meterRegistry.counter("export.task.num", exportID, "records");
     }
@@ -80,14 +93,27 @@ public class ExportDocTask implements Callable<String> {
     private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
 
         try {
-            long start = System.currentTimeMillis();
             CatalogueExporter exporter = getExporter(catalogueURL);
             if (this.limit != null && this.limit > -1) {
                 exporter.setLimit(limit);
             }
+            String path = new URL(mappingURL).getPath();
+            String mappingName = FilenameUtils.removeExtension(path.substring(path.lastIndexOf('/') + 1));
+            Timer.Sample getDataSetIdsTimer = Timer.start(this.meterRegistry);
             Collection<String> allResourceIDs = exporter.fetchAllDatasetUUIDs();
+            Collection<Tag> tags = new ArrayList<>();
+            tags.add(Tag.of("source", catalogueURL));
+            tags.add(Tag.of("mapping.name", mappingName));
+            tags.add(Tag.of("exportID", exportID));
+            tags.add(Tag.of("records.size", String.valueOf(allResourceIDs.size())));
+
+            getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs" + exporter.getClass().getName(), tags));
             String xml = null;
+
+            String now = df.format(new Date());
+            int messageCount = 0;
             for (String resourceId : allResourceIDs) {
+                Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
                 Object resource = exporter.exportResource(resourceId);
                 if (resource instanceof JSONObject) {
                     xml = exporter.transformToXml((JSONObject) resource);
@@ -115,6 +141,10 @@ public class ExportDocTask implements Callable<String> {
                     if (exportID != null) {
                         json.put("export_id", exportID);
                     }
+                    json.put("records_size", allResourceIDs.size());
+                    json.put("source_catalogue_url", catalogueURL);
+                    json.put("creation_time", now);
+                    json.put("message_count", messageCount++);
 
                     byte[] encoded = (Base64.encodeBase64(json.toString().getBytes()));
                     String message = new String(encoded, "UTF-8");
@@ -123,16 +153,13 @@ public class ExportDocTask implements Callable<String> {
                             MessageProperties.PERSISTENT_TEXT_PLAIN,
                             message.getBytes("UTF-8"));
 
+                    now = df.format(new Date());
                 } catch (TimeoutException ex) {
                     Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
-//                this.recordsCounter.increment();
-
+                exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
             }
-            long elapsed = System.currentTimeMillis() - start;
-            System.err.println("elapsed: " + elapsed);
-//            Set<String> names = endpoint.listNames().getNames();
-//        endpoint.metric(catalogueURL, list);
+
         } catch (IOException ex) {
             Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -152,11 +179,7 @@ public class ExportDocTask implements Callable<String> {
     @Override
 //    @Timed
     public String call() throws Exception {
-        Timer.Sample timer = Timer.start(this.meterRegistry);
-        timer.stop(meterRegistry.timer(this.getClass().getName()+ "." + this.exportID, "response", "START"));
-        timer = Timer.start(this.meterRegistry);
         exportDocuments(this.catalogueURL, this.exportID);
-        timer.stop(meterRegistry.timer(this.getClass().getName()+"." + exportID, "response", "FINISHED"));
         return null;
     }
 

@@ -5,6 +5,8 @@
  */
 package nl.uva.sne.vre4eic.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +35,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -41,13 +44,24 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 @Service
 public class VREPortalIngestService {
 
+    @Autowired
+    MeterRegistry meterRegistry;
+
     @Value("${node.service.url:http://v4e-lab.isti.cnr.it:8080/NodeService/}")
     private String nodeServiceURL;
 
     private static String JSESSIONID;
+    private String exportID;
+    private String mappingName;
 
     public JSONObject ingest(JSONObject requestParams) throws IOException, MalformedURLException, ParseException {
+        Timer.Sample ingestTimer = Timer.start(meterRegistry);
+
         String sourceRecords = (String) requestParams.get("sourceRecURL");
+        String[] parts = sourceRecords.split("/");
+        exportID = parts[parts.length - 1];
+        mappingName = parts[parts.length - 2];
+
         String ingestCatURL = (String) requestParams.get("ingestCatalogueURL");
         String token = (String) requestParams.get("token");
         String username = (String) requestParams.get("username");
@@ -85,6 +99,8 @@ public class VREPortalIngestService {
         JSONObject afterUploadProcessInput = getAfterUploadProcessInput(inputParams, (String) resp.get("linkingUpdateQuery"));
         resp = afterUploadProcess(ingestCatURL, afterUploadProcessInput, token);
         response.putAll(resp);
+
+        ingestTimer.stop(meterRegistry.timer("ingest." + this.getClass().getName(), "target.metadata.catalogue", ingestCatURL, "mapping.name", mappingName, "exportID", exportID));
 
         return response;
 
@@ -130,13 +146,15 @@ public class VREPortalIngestService {
     }
 
     private JSONObject createGraphMetadata(String vreportal, JSONObject createGraphMetadataInput, String token) throws IOException, ParseException {
+        Timer.Sample createGraphMetadataTimer = Timer.start(meterRegistry);
         String response = post(vreportal + "/createGraphMetadata", createGraphMetadataInput, token);
         JSONParser parser = new JSONParser();
+        createGraphMetadataTimer.stop(meterRegistry.timer("createGraphMetadata." + this.getClass().getName(), "target.metadata.catalogue", vreportal, "mapping.name", mappingName, "exportID", exportID));
         return (JSONObject) parser.parse(response);
 
     }
 
-    private static String post(String service, JSONObject createGraphMetadataInput, String token) throws MalformedURLException, ProtocolException, IOException {
+    private String post(String service, JSONObject createGraphMetadataInput, String token) throws MalformedURLException, ProtocolException, IOException {
         HttpPost request = new HttpPost(service);
         StringEntity params = new StringEntity(createGraphMetadataInput.toJSONString());
         request.addHeader("Content-Type", "application/json");
@@ -181,13 +199,15 @@ public class VREPortalIngestService {
         return insertUserProfileMetadataInput;
     }
 
-    private static JSONObject insertUserProfileMetadata(String vreportal, JSONObject createGraphMetadataInput, String token) throws ProtocolException, IOException, ParseException {
+    private JSONObject insertUserProfileMetadata(String vreportal, JSONObject createGraphMetadataInput, String token) throws ProtocolException, IOException, ParseException {
+        Timer.Sample insertUserProfileMetadataTimer = Timer.start(meterRegistry);
         String response = post(vreportal + "/insertUserProfileMetadata", createGraphMetadataInput, token);
         JSONParser parser = new JSONParser();
+        insertUserProfileMetadataTimer.stop(meterRegistry.timer("insertUserProfileMetadata." + this.getClass().getName(), "target.metadata.catalogue", vreportal, "mapping.name", mappingName, "exportID", exportID));
         return (JSONObject) parser.parse(response);
     }
 
-    private static JSONObject getUploadInput(JSONObject requestParams, String token, String linkingUpdateQuery) {
+    private JSONObject getUploadInput(JSONObject requestParams, String token, String linkingUpdateQuery) {
         JSONObject uploadInput = new JSONObject();
         uploadInput.put("namedGraphLabelParam", (String) requestParams.get("namedGraphLabelParam"));
         uploadInput.put("selectedCategoryLabel", (String) requestParams.get("selectedCategoryLabel"));
@@ -199,7 +219,8 @@ public class VREPortalIngestService {
         return uploadInput;
     }
 
-    private static JSONObject upload(String vreportal, JSONObject uploadnput, String filesPath) throws ProtocolException, IOException, ParseException {
+    private JSONObject upload(String vreportal, JSONObject uploadnput, String filesPath) throws ProtocolException, IOException, ParseException {
+        Timer.Sample uploadTimer = Timer.start(meterRegistry);
         String endpoint = vreportal + "/upload";
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost uploadFile = new HttpPost(endpoint);
@@ -259,10 +280,11 @@ public class VREPortalIngestService {
         } else {
             json.put("success", false);
         }
+        uploadTimer.stop(meterRegistry.timer("upload." + this.getClass().getName(), "target.metadata.catalogue", vreportal, "mapping.name", mappingName, "exportID", exportID));
         return json;
     }
 
-    private static JSONObject getAfterUploadProcessInput(JSONObject requestParams, String linkingUpdateQuery) {
+    private JSONObject getAfterUploadProcessInput(JSONObject requestParams, String linkingUpdateQuery) {
         JSONObject afterUploadProcessInput = new JSONObject();
         afterUploadProcessInput.put("namedGraphLabel", (String) requestParams.get("namedGraphLabelParam"));
         afterUploadProcessInput.put("namedGraphIdParam", (String) requestParams.get("namedGraphIdParam"));
@@ -271,9 +293,11 @@ public class VREPortalIngestService {
         return afterUploadProcessInput;
     }
 
-    private static JSONObject afterUploadProcess(String vreportal, JSONObject afterUploadProcessInput, String token) throws ProtocolException, IOException, ParseException {
+    private JSONObject afterUploadProcess(String vreportal, JSONObject afterUploadProcessInput, String token) throws ProtocolException, IOException, ParseException {
+        Timer.Sample afterUploadProcessTimer = Timer.start(meterRegistry);
         String resp = post(vreportal + "/after_upload_process", afterUploadProcessInput, token);
         JSONParser parser = new JSONParser();
+        afterUploadProcessTimer.stop(meterRegistry.timer("afterUploadProcess." + this.getClass().getName(), "target.metadata.catalogue", vreportal, "mapping.name", mappingName, "exportID", exportID));
         return (JSONObject) parser.parse(resp);
     }
 }

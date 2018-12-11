@@ -11,8 +11,8 @@
   <modules>
     <module>rest_cat</module>
     <module>cat_worker</module>
-    <module>statistics_cat</module>
     <module>CerifDataHarvester</module>
     <module>x3ml-1.9.0</module>
+    <module>BenchmarkCat</module>
   </modules>
 </project>
