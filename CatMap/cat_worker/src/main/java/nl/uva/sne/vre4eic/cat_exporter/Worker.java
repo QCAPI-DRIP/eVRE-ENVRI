@@ -134,24 +134,21 @@ public class Worker {
 
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
-                    int numOfConsumers = getNumberOfConsumers(taskQeueName, "http://" + rabbitMQHost + ":15672/api/consumers/%2F", "guest", "guest");
                     Collection<Tag> tags = new ArrayList<>();
                     tags.add(Tag.of("source", catalogueURL));
                     tags.add(Tag.of("mapping.name", mappingName));
                     tags.add(Tag.of("exportID", exportID));
-                    tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
-                    tags.add(Tag.of("records.size", String.valueOf(recordSize)));
+                    tags.add(Tag.of("records.len", String.valueOf(recordSize)));
 
                     String webdavFolder = mappingName;
                     if (exportID != null) {
                         webdavFolder = mappingName + "/" + exportID;
                     }
                     File rdfFile = new File(outputRfdFolder + File.separator + fileName + ".ttl");
+
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "fileName: {0}", fileName);
-
-//                    rdf.write(new PrintStream(rdfFile), "application/rdf+xml");
                     rdf.write(new PrintStream(rdfFile), "text/turtle");
-
+                    tags.add(Tag.of("record.size", String.valueOf(rdfFile.length())));
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Saved file :{0}", rdfFile.getAbsolutePath());
                     if (webdavHost != null) {
 
@@ -250,35 +247,4 @@ public class Worker {
         }
         return data.toByteArray();
     }
-
-    private int getNumberOfConsumers(String taskQeueName, String rabbitAPIURL, String username, String password) throws MalformedURLException, IOException {
-        StringBuilder result = new StringBuilder();
-        URL url = new URL(rabbitAPIURL);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-
-        String userpassword = username + ":" + password;
-
-        byte[] encodedBytes = Base64.encodeBase64(userpassword.getBytes());
-        conn.setRequestProperty("Authorization", "Basic "
-                + new String(encodedBytes));
-
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-        }
-        int consumerCount = 0;
-        JSONArray resp = new JSONArray(result.toString());
-        Iterator<Object> iter = resp.iterator();
-        while (iter.hasNext()) {
-            JSONObject obj = (JSONObject) iter.next();
-            if (obj.getJSONObject("queue").getString("name").equals(taskQeueName)) {
-                consumerCount++;
-            }
-        }
-        return consumerCount;
-    }
-
 }
