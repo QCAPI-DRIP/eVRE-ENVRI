@@ -134,21 +134,23 @@ public class Worker {
 
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
+                    
                     Collection<Tag> tags = new ArrayList<>();
                     tags.add(Tag.of("source", catalogueURL));
                     tags.add(Tag.of("mapping.name", mappingName));
                     tags.add(Tag.of("exportID", exportID));
-                    tags.add(Tag.of("records.len", String.valueOf(recordSize)));
+                    tags.add(Tag.of("records.size", String.valueOf(recordSize)));
 
                     String webdavFolder = mappingName;
                     if (exportID != null) {
                         webdavFolder = mappingName + "/" + exportID;
                     }
                     File rdfFile = new File(outputRfdFolder + File.separator + fileName + ".ttl");
-
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "fileName: {0}", fileName);
+
+//                    rdf.write(new PrintStream(rdfFile), "application/rdf+xml");
                     rdf.write(new PrintStream(rdfFile), "text/turtle");
-                    tags.add(Tag.of("record.size", String.valueOf(rdfFile.length())));
+
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Saved file :{0}", rdfFile.getAbsolutePath());
                     if (webdavHost != null) {
 
@@ -247,4 +249,7 @@ public class Worker {
         }
         return data.toByteArray();
     }
+
+
+
 }
