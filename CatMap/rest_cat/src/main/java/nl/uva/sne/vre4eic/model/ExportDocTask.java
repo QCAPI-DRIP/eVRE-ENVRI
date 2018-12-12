@@ -15,8 +15,6 @@ import gr.forth.ics.isl.exporter.CatalogueExporter;
 import gr.forth.ics.isl.exporter.D4ScienceExporter;
 import gr.forth.ics.isl.exporter.OGCCSWExporter;
 import gr.forth.ics.isl.util.XML;
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
@@ -26,11 +24,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
@@ -48,8 +44,6 @@ import static nl.uva.sne.vre4eic.util.Util.isCSW;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -107,7 +101,7 @@ public class ExportDocTask implements Callable<String> {
             tags.add(Tag.of("exportID", exportID));
             tags.add(Tag.of("records.size", String.valueOf(allResourceIDs.size())));
 
-            getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs" + exporter.getClass().getName(), tags));
+            getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs." + exporter.getClass().getName(), tags));
             String xml = null;
 
             String now = df.format(new Date());

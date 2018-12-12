@@ -28,6 +28,7 @@ public class CerifConverterMain {
     private static String webdavHost;
     private static String webdavUser;
     private static String webdavPass;
+    private static String influxDB;
 
     public static void main(String[] argv) {
         try {
@@ -39,7 +40,6 @@ public class CerifConverterMain {
 //            Option zookeeperHostOption = new Option("z", "zookeeper_host", true, "zookeeper host");
 //            zookeeperHostOption.setRequired(true);
 //            options.addOption(zookeeperHostOption);
-
             Option webdavHostOption = new Option("w", "webdav_host", true, "webdav host");
             webdavHostOption.setRequired(true);
             options.addOption(webdavHostOption);
@@ -51,6 +51,11 @@ public class CerifConverterMain {
             Option webdavUPassOtion = new Option("p", "webdav_pass", true, "webdav pass");
             webdavUPassOtion.setRequired(false);
             options.addOption(webdavUPassOtion);
+
+            Option influxOtion = new Option("i", "influxDB_URI", true, "influxDB URI");
+            webdavUPassOtion.setRequired(false);
+            options.addOption(influxOtion);
+
 //
 //            Option mappings = new Option("m", "mappings", true, "mappings path");
 //            mappings.setRequired(true);
@@ -78,7 +83,6 @@ public class CerifConverterMain {
 
 //            zookeeperHost = cmd.getOptionValue("zookeeper_host");
 //            Logger.getLogger(CerifConverterMain.class.getName()).log(Level.INFO, "zookeeper host: {0}", zookeeperHost);
-
             webdavHost = cmd.getOptionValue("webdav_host");
             Logger.getLogger(CerifConverterMain.class.getName()).log(Level.INFO, "webdav host: {0}", webdavHost);
 
@@ -87,11 +91,14 @@ public class CerifConverterMain {
 
             webdavPass = cmd.getOptionValue("webdav_pass");
             Logger.getLogger(CerifConverterMain.class.getName()).log(Level.INFO, "webdav host: {0}", webdavPass);
+            
+            influxDB = cmd.getOptionValue("influxDB_URI");
+            Logger.getLogger(CerifConverterMain.class.getName()).log(Level.INFO, "influxDB URI: {0}", influxDB);
 
             String taskQName = "metadata_records";
             File output = new File(System.getProperty("java.io.tmpdir") + File.separator + "cerif");
             output.mkdirs();
-            new Worker(rabbitMQHost, webdavHost, webdavUser, webdavPass, taskQName, output.getAbsolutePath()).consume();
+            new Worker(rabbitMQHost, webdavHost, webdavUser, webdavPass, taskQName, output.getAbsolutePath(),influxDB).consume();
 //            new Executor(rabbitMQHost, zookeeperHost, webdavHost, webdavUser, webdavPass, "/catmap_conf").run();
 
 //            mappingsPath = cmd.getOptionValue("mappings");

@@ -28,43 +28,47 @@ import org.json.JSONObject;
  */
 public class Main {
 
-    private static String baseURL = "http://localhost:8080/rest/";
-    private static String d4ScienceCKAN = "https://ckan-d4s.d4science.org/";
-    private static String[] mapping115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
-    private static int limit = 10;
-    private static String queueName = "metadata_records";
-    private static String rabbitAPIURL = "http://localhost:15672/api/consumers/%2F";
-    private static String rabbitUser = "guest";
-    private static String rabbitPass = "guest";
+    private static final String CAT_BASE_URL = "http://localhost:8083/catalogue_mapper/";
+    private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
+    private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
+    private static final int LIMIT = 10;
+    private static final String QUEUE_NAME = "metadata_records";
+    private static final String RABBIT_API_URL = "http://localhost:15672/api/consumers/%2F";
+    private static final String RABBIT_USER = "guest";
+    private static final String RABBIT_PASS = "guest";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         try {
-            benchmarkConversion(d4ScienceCKAN, mapping115, UUID.randomUUID().toString());
+            benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static void benchmarkConversion(String catalogueURL, String[] mapping, String exportID) throws IOException {
+    private static void benchmarkConversion(String catalogueURL, String[] mapping, String exportID) throws IOException, InterruptedException {
         String mappingName = mapping[0].substring(mapping[0].lastIndexOf("/") + 1, mapping[0].lastIndexOf("."));
         Collection<Tag> tags = new ArrayList<>();
         tags.add(Tag.of("source", catalogueURL));
-
         tags.add(Tag.of("mapping.name", mappingName));
-
         tags.add(Tag.of("exportID", exportID));
-        int numOfConsumers = Util.getNumberOfConsumers(queueName, rabbitAPIURL, rabbitUser, rabbitPass);
+        int numOfConsumers = Util.getNumberOfConsumers(QUEUE_NAME, RABBIT_API_URL, RABBIT_USER, RABBIT_PASS);
         tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
-        tags.add(Tag.of("records.size", String.valueOf(limit)));
-        String folderName = mappingName + "/" + exportID;
+        tags.add(Tag.of("records.size", String.valueOf(LIMIT)));
 
-        ConvertControllerClient convertClient = new ConvertControllerClient(baseURL);
-        String resp = convertClient.convert(catalogueURL, mapping[0], mapping[1], String.valueOf(limit), exportID);
+        ConvertControllerClient convertClient = new ConvertControllerClient(CAT_BASE_URL);
+        String resp = convertClient.convert(catalogueURL, mapping[0], mapping[1], String.valueOf(LIMIT), exportID);
         System.err.println(resp);
 
+        String folderName = mappingName + "/" + exportID;
         JSONArray res = convertClient.listResults(folderName);
         System.err.println(res);
         System.err.println(res.length());
+        while (((res.length()-1) / 2) < LIMIT) {
+            res = convertClient.listResults(folderName);
+            System.err.println(((res.length()-1) / 2));
+            Thread.sleep(500);
+        }
+//        System.err.println(((res.length()-1) / 2));
     }
 
 }

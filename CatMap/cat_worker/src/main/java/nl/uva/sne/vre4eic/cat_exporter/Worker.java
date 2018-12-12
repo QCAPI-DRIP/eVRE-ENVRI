@@ -33,29 +33,21 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.influx.InfluxConfig;
+import io.micrometer.influx.InfluxConsistency;
 import io.micrometer.influx.InfluxMeterRegistry;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.TimeZone;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
@@ -70,8 +62,10 @@ public class Worker {
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
+    private final String influxDBURI;
+    private InfluxConfig influxConfig;
 
-    public Worker(String rabbitMQHost, String webdavHost, String webdavUser, String webdavPass, String taskQeueName, String output) throws IOException {
+    public Worker(String rabbitMQHost, String webdavHost, String webdavUser, String webdavPass, String taskQeueName, String output, String influxDBURI) throws IOException {
         this.taskQeueName = taskQeueName;
         this.rabbitMQHost = rabbitMQHost;
         this.outputRfdFolder = output;
@@ -82,15 +76,90 @@ public class Worker {
             this.webdavUser = webdavUser;
             this.webdavPass = webdavPass;
         }
+        this.influxDBURI = influxDBURI;
         df.setTimeZone(tz);
+        if (influxDBURI == null) {
+            this.influxConfig = InfluxConfig.DEFAULT;
+        } else {
+            influxConfig = new InfluxConfig() {
+                @Override
+                public String prefix() {
+                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String db() {
+                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public InfluxConsistency consistency() {
+                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String userName() {
+                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String password() {
+                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionPolicy() {
+                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionDuration() {
+                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Integer retentionReplicationFactor() {
+                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionShardDuration() {
+                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String uri() {
+                    return influxDBURI;
+                }
+
+                @Override
+                public boolean compressed() {
+                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public boolean autoCreateDb() {
+                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String get(String key) {
+                    return null;
+                }
+
+            };
+        }
+
         Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Consuming from qeue: {0}", taskQeueName);
     }
 
     public void consume() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitMQHost);
-        MeterRegistry meterRegistry = new InfluxMeterRegistry(InfluxConfig.DEFAULT, Clock.SYSTEM);
-//
+        MeterRegistry meterRegistry;
+
+        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
+
         MicrometerMetricsCollector metricsCollector = new MicrometerMetricsCollector(meterRegistry);
         factory.setMetricsCollector(metricsCollector);
 
@@ -134,7 +203,7 @@ public class Worker {
 
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
-                    
+
                     Collection<Tag> tags = new ArrayList<>();
                     tags.add(Tag.of("source", catalogueURL));
                     tags.add(Tag.of("mapping.name", mappingName));
@@ -178,7 +247,7 @@ public class Worker {
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
 
                     }
-
+                    Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Stop timer. Tags: {0}", tags);
                     handleDeliveryTimer.stop(meterRegistry.timer("handleDelivery." + Worker.class.getName(), tags));
 
                 } catch (IOException | ParserConfigurationException | SAXException ex) {
@@ -249,7 +318,5 @@ public class Worker {
         }
         return data.toByteArray();
     }
-
-
 
 }
