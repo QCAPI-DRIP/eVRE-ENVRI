@@ -125,6 +125,8 @@ public class Main {
         try {
             init();
             benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
+
+            meterRegistry.close();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -148,7 +150,7 @@ public class Main {
         String folderName = mappingName + "/" + exportID;
         JSONArray res = convertClient.listResults(folderName);
         int count = (res.length() - 1) / 2;
-        Counter counter = meterRegistry.counter("benchmarkConversion." + Main.class.getName() + ".records.converted");
+        Counter counter = meterRegistry.counter("benchmarkConversion." + Main.class.getName() + ".records.converted", tags);
         counter.increment(count);
         while (count < LIMIT) {
             res = convertClient.listResults(folderName);
@@ -158,6 +160,7 @@ public class Main {
         }
         hbenchmarkConversionTimer.stop(meterRegistry.timer("benchmarkConversion." + Main.class.getName(), tags));
         counter.close();
+
 //        System.err.println(((res.length()-1) / 2));
     }
 

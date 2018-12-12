@@ -9,3 +9,7 @@ curl -X POST -H 'Content-Type:text/turtle' -H 'Authorization: Basic YWRtaW46taW4
 curl -v -X PUT      --digest -u dba:dba      -H Content-Type:text/turtle      -T Mapping115_0ca0eeb1-41fd-4b25-bbea-070461188521.ttl      -G http://localhost:8890/sparql-graph-crud-auth  --data-urlencode graph=http://envri-data
 curl -X PUT -H Content-Type:text/turtle  -T Mapping115_0ca0eeb1-41fd-4b25-bbea-070461188521.ttl -G http://localhost:3030/envri/data -data-urlencode graph=http://envri-data
 
+
+
+---------------------Queries-------------------------
+SELECT mean(upper), Stddev(upper) FROM "mydb"."autogen"."benchmarkConversion_nl_uva_sne_vre4eic_benchmarkcat_Main" WHERE "upper" > 0 GROUP BY "num_of_consumers", "source", "mapping_name"
