@@ -62,8 +62,7 @@ public class Worker {
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
-    private final String influxDBURI;
-    private InfluxConfig influxConfig;
+    private final InfluxConfig influxConfig;
 
     public Worker(String rabbitMQHost, String webdavHost, String webdavUser, String webdavPass, String taskQeueName, String output, String influxDBURI) throws IOException {
         this.taskQeueName = taskQeueName;
@@ -76,7 +75,6 @@ public class Worker {
             this.webdavUser = webdavUser;
             this.webdavPass = webdavPass;
         }
-        this.influxDBURI = influxDBURI;
         df.setTimeZone(tz);
         if (influxDBURI == null) {
             this.influxConfig = InfluxConfig.DEFAULT;

@@ -39,29 +39,14 @@ services:
             - 8083:8080      
         depends_on:
             - rabbit          
-            - influx     
-        deploy:
-            resources:
-                limits:
-                    cpus: '0.1'
-                    memory: 100M
-                reservations:
-                    cpus: '0.01'
-                    memory: 40M                  
+            - influx                   
             
     cat-worker:
         image: cat-worker
         deploy:
             restart_policy:
                 condition: on-failure
-            replicas: 1
-            resources:
-                limits:
-                    cpus: '0.1'
-                    memory: 100M
-                reservations:
-                    cpus: '0.01'
-                    memory: 40M             
+            replicas: 1          
         environment:
             RABBIT_HOST: rabbit
             RABBIT_PORT: 5672

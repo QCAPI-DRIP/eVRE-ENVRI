@@ -5,7 +5,13 @@
  */
 package nl.uva.sne.vre4eic.benchmarkcat;
 
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.influx.InfluxConfig;
+import io.micrometer.influx.InfluxConsistency;
+import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,9 +42,88 @@ public class Main {
     private static final String RABBIT_API_URL = "http://localhost:15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
     private static final String RABBIT_PASS = "guest";
+    private static final String INFLUXDB_URI = "http://localhost:8086";
+    private static InfluxConfig influxConfig;
+    private static InfluxMeterRegistry meterRegistry;
+
+    private static void init() {
+        if (INFLUXDB_URI == null) {
+            influxConfig = InfluxConfig.DEFAULT;
+        } else {
+            influxConfig = new InfluxConfig() {
+                @Override
+                public String prefix() {
+                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String db() {
+                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public InfluxConsistency consistency() {
+                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String userName() {
+                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String password() {
+                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionPolicy() {
+                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionDuration() {
+                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public Integer retentionReplicationFactor() {
+                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String retentionShardDuration() {
+                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String uri() {
+                    return INFLUXDB_URI;
+                }
+
+                @Override
+                public boolean compressed() {
+                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public boolean autoCreateDb() {
+                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public String get(String key) {
+                    return null;
+                }
+            };
+        }
+        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
+
+    }
 
     public static void main(String[] args) throws InterruptedException {
         try {
+            init();
             benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -55,19 +140,24 @@ public class Main {
         tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
         tags.add(Tag.of("records.size", String.valueOf(LIMIT)));
 
+        Timer.Sample hbenchmarkConversionTimer = Timer.start(meterRegistry);
         ConvertControllerClient convertClient = new ConvertControllerClient(CAT_BASE_URL);
         String resp = convertClient.convert(catalogueURL, mapping[0], mapping[1], String.valueOf(LIMIT), exportID);
         System.err.println(resp);
 
         String folderName = mappingName + "/" + exportID;
         JSONArray res = convertClient.listResults(folderName);
-        System.err.println(res);
-        System.err.println(res.length());
-        while (((res.length()-1) / 2) < LIMIT) {
+        int count = (res.length() - 1) / 2;
+        Counter counter = meterRegistry.counter("benchmarkConversion." + Main.class.getName() + ".records.converted");
+        counter.increment(count);
+        while (count < LIMIT) {
             res = convertClient.listResults(folderName);
-            System.err.println(((res.length()-1) / 2));
+            count = (res.length() - 1) / 2;
+            counter.increment(count);
             Thread.sleep(500);
         }
+        hbenchmarkConversionTimer.stop(meterRegistry.timer("benchmarkConversion." + Main.class.getName(), tags));
+        counter.close();
 //        System.err.println(((res.length()-1) / 2));
     }
 
