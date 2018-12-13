@@ -34,12 +34,13 @@ import org.json.JSONObject;
  */
 public class Main {
 
-    private static final String CAT_BASE_URL = "http://localhost:8083/catalogue_mapper/";
+    private static final String HOST = "drip.vlan400.uvalight.net";
+    private static final String CAT_BASE_URL = "http://"+HOST+":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
     private static final int LIMIT = 10;
     private static final String QUEUE_NAME = "metadata_records";
-    private static final String RABBIT_API_URL = "http://localhost:15672/api/consumers/%2F";
+    private static final String RABBIT_API_URL = "http://"+HOST+":15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
     private static final String RABBIT_PASS = "guest";
     private static final String INFLUXDB_URI = "http://localhost:8086";
