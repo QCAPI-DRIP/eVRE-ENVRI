@@ -7,11 +7,11 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure      
-        ports:
-            - "15672:15672"
-            - "5671:5671"
-            - "15671:15671"
-            - "5672:5672"
+        #ports:
+            #- "15672:15672"
+            #- "5671:5671"
+            #- "15671:15671"
+            #- "5672:5672"
         deploy:
             resources:
                 limits:
@@ -105,15 +105,15 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-        volumes:
-            - webdav:/var/www     
+        #volumes:
+            #- webdav:/var/www     
         deploy:
             resources:
                 limits:
-                    cpus: '0.1'
+                    cpus: '0.3'
                     memory: 50M
                 reservations:
-                    cpus: '0.01'
+                    cpus: '0.1'
                     memory: 20M            
             
     #jena-fuseki: 
@@ -132,17 +132,17 @@ services:
         image: influxdb
         environment:
             INFLUXDB_DB: mydb
-        #volumes:
-            #- influx:/var/lib/influxdb
+        volumes:
+            - influx:/var/lib/influxdb
         ports:
             - "8086:8086"
         deploy:
             resources:
                 limits:
-                    cpus: '0.1'
+                    cpus: '0.3'
                     memory: 100M
                 reservations:
-                    cpus: '0.01'
+                    cpus: '0.1'
                     memory: 40M                
             
                     
@@ -227,8 +227,8 @@ services:
               
             
                                 
-volumes:
+#volumes:
   #influx:
   #grafana:
-  webdav:
+  #webdav:
     
