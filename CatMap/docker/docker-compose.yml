@@ -194,7 +194,7 @@ services:
                     memory: 50M
                 reservations:
                     cpus: '0.01'
-                    memory: 20M                
+                    memory: 20M      
 
     #kapacitor:
         #image: kapacitor
@@ -227,8 +227,8 @@ services:
               
             
                                 
-#volumes:
-  #influx:
+volumes:
+  influx:
   #grafana:
   #webdav:
     
