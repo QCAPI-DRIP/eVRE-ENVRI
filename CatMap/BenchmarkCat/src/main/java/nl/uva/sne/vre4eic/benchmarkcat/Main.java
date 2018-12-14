@@ -8,25 +8,16 @@ package nl.uva.sne.vre4eic.benchmarkcat;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 import io.micrometer.influx.InfluxMeterRegistry;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -34,16 +25,16 @@ import org.json.JSONObject;
  */
 public class Main {
 
-    private static final String HOST = "drip.vlan400.uvalight.net";
-    private static final String CAT_BASE_URL = "http://"+HOST+":8083/catalogue_mapper/";
+    private static final String HOST = "localhost";//"drip.vlan400.uvalight.net"; //"localhost"
+    private static final String CAT_BASE_URL = "http://" + HOST + ":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
-    private static final int LIMIT = 10;
+    private static final int LIMIT = 5;
     private static final String QUEUE_NAME = "metadata_records";
-    private static final String RABBIT_API_URL = "http://"+HOST+":15672/api/consumers/%2F";
+    private static final String RABBIT_API_URL = "http://" + HOST + ":15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
     private static final String RABBIT_PASS = "guest";
-    private static final String INFLUXDB_URI = "http://localhost:8086";
+    private static final String INFLUXDB_URI = "http://" + HOST + ":8086";
     private static InfluxConfig influxConfig;
     private static InfluxMeterRegistry meterRegistry;
 
@@ -125,8 +116,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         try {
             init();
-            benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
-
+            for (int i = 0; i < 1; i++) {
+                long start = System.currentTimeMillis();
+                benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
+                System.err.println("Start: " + start + " End: " + System.currentTimeMillis());
+            }
             meterRegistry.close();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,7 +137,6 @@ public class Main {
         tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
         tags.add(Tag.of("records.size", String.valueOf(LIMIT)));
 
-        Timer.Sample hbenchmarkConversionTimer = Timer.start(meterRegistry);
         ConvertControllerClient convertClient = new ConvertControllerClient(CAT_BASE_URL);
         String resp = convertClient.convert(catalogueURL, mapping[0], mapping[1], String.valueOf(LIMIT), exportID);
         System.err.println(resp);
@@ -151,17 +144,17 @@ public class Main {
         String folderName = mappingName + "/" + exportID;
         JSONArray res = convertClient.listResults(folderName);
         int count = (res.length() - 1) / 2;
-        Counter counter = meterRegistry.counter("benchmarkConversion." + Main.class.getName() + ".records.converted", tags);
-        counter.increment(count);
+        Counter startCounter = meterRegistry.counter("start.benchmark.conversion.", tags);
+        startCounter.increment();
         while (count < LIMIT) {
             res = convertClient.listResults(folderName);
             count = (res.length() - 1) / 2;
-            counter.increment(count);
-            Thread.sleep(500);
+            System.err.println("Records: " + count);
+            Thread.sleep(200);
         }
-        hbenchmarkConversionTimer.stop(meterRegistry.timer("benchmarkConversion." + Main.class.getName(), tags));
-        counter.close();
-
+        System.err.println(startCounter.count());
+        startCounter.close();
+        System.err.println(startCounter.count());
 //        System.err.println(((res.length()-1) / 2));
     }
 

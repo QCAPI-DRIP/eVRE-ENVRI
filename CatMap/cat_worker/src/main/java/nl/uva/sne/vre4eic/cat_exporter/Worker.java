@@ -152,6 +152,7 @@ public class Worker {
     }
 
     public void consume() throws IOException, TimeoutException {
+        long consumeStart = System.currentTimeMillis();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitMQHost);
         MeterRegistry meterRegistry;
@@ -170,13 +171,17 @@ public class Worker {
 
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException, FileNotFoundException {
-                Timer.Sample handleDeliveryTimer = Timer.start(meterRegistry);
+                long start = System.currentTimeMillis();
+                Timer.Sample handleDeliverySample = Timer.start(meterRegistry);
+                Collection<Tag> tags = new ArrayList<>();
+
                 byte[] decodedBytes = Base64.decodeBase64(body);
                 String message = new String(decodedBytes, "UTF-8");
                 JSONObject jObject = new JSONObject(message);
                 File mapping = null;
                 File generator = null;
                 String ckanRecordID = null;
+                int messageCount = 0;
 
                 try {
                     byte[] mappingData = getBytes(new URL(jObject.getString("mappingURL")));
@@ -190,7 +195,7 @@ public class Worker {
                     String xmlCkan = jObject.getString("metadata_record");
                     ckanRecordID = jObject.getString("record_id");
                     int recordSize = jObject.getInt("records_size");
-                    int messageCount = jObject.getInt("message_count");
+                    messageCount = jObject.getInt("message_count");
                     String catalogueURL = jObject.getString("source_catalogue_url");
 
                     X3MLEngine.Output rdf = convert(xmlCkan, mapping, generator);
@@ -202,11 +207,12 @@ public class Worker {
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
 
-                    Collection<Tag> tags = new ArrayList<>();
                     tags.add(Tag.of("source", catalogueURL));
                     tags.add(Tag.of("mapping.name", mappingName));
                     tags.add(Tag.of("exportID", exportID));
                     tags.add(Tag.of("records.size", String.valueOf(recordSize)));
+                    tags.add(Tag.of("message.count", String.valueOf(messageCount)));
+                    tags.add(Tag.of("record.id", String.valueOf(ckanRecordID)));
 
                     String webdavFolder = mappingName;
                     if (exportID != null) {
@@ -214,13 +220,14 @@ public class Worker {
                     }
                     File rdfFile = new File(outputRfdFolder + File.separator + fileName + ".ttl");
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "fileName: {0}", fileName);
+                    tags.add(Tag.of("rdf.file.size", String.valueOf(rdfFile.length())));
 
 //                    rdf.write(new PrintStream(rdfFile), "application/rdf+xml");
                     rdf.write(new PrintStream(rdfFile), "text/turtle");
 
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Saved file :{0}", rdfFile.getAbsolutePath());
-                    if (webdavHost != null) {
 
+                    if (webdavHost != null) {
                         Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Connected to :{0}", webdavHost);
                         String webdavUserEnv = System.getenv("WEBDAV_USERNAME");
                         if (webdavUserEnv != null) {
@@ -243,10 +250,8 @@ public class Worker {
 
                         sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".xml", xmlCkan.getBytes());
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
-
                     }
-                    Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Stop timer. Tags: {0}", tags);
-                    handleDeliveryTimer.stop(meterRegistry.timer("handleDelivery." + Worker.class.getName(), tags));
+//                    Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Stop timer. Tags: {0}", tags);
 
                 } catch (IOException | ParserConfigurationException | SAXException ex) {
                     if (ex instanceof org.xml.sax.SAXParseException) {
@@ -265,6 +270,10 @@ public class Worker {
                         generator.delete();
                     }
                 }
+                handleDeliverySample.stop(meterRegistry.timer("Worker."+this.hashCode()+".handleDelivery.", tags));
+                System.err.println("messageCount: " + messageCount+" Start: " + start + " End: " + System.currentTimeMillis());
+                
+                
             }
         };
         channel.basicConsume(taskQeueName, false, consumer);

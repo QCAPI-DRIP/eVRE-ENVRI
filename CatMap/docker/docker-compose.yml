@@ -9,9 +9,9 @@ services:
                 condition: on-failure      
         ports:
             - "15672:15672"
-            #- "5671:5671"
-            #- "15671:15671"
-            #- "5672:5672"
+            - "5671:5671"
+            - "15671:15671"
+            - "5672:5672"
         deploy:
             resources:
                 limits:
@@ -132,8 +132,8 @@ services:
         image: influxdb
         environment:
             INFLUXDB_DB: mydb
-        volumes:
-            - influx:/var/lib/influxdb
+        #volumes:
+            #- influx:/var/lib/influxdb
         ports:
             - "8086:8086"
         deploy:
@@ -227,8 +227,8 @@ services:
               
             
                                 
-volumes:
-  influx:
+#volumes:
+  #influx:
   #grafana:
   #webdav:
     

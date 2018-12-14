@@ -85,7 +85,8 @@ public class ExportDocTask implements Callable<String> {
     }
 
     private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
-
+        long start = System.currentTimeMillis();
+        Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
         try {
             CatalogueExporter exporter = getExporter(catalogueURL);
             if (this.limit != null && this.limit > -1) {
@@ -100,14 +101,13 @@ public class ExportDocTask implements Callable<String> {
             tags.add(Tag.of("mapping.name", mappingName));
             tags.add(Tag.of("exportID", exportID));
             tags.add(Tag.of("records.size", String.valueOf(allResourceIDs.size())));
-
             getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs." + exporter.getClass().getName(), tags));
             String xml = null;
 
             String now = df.format(new Date());
             int messageCount = 0;
             for (String resourceId : allResourceIDs) {
-                Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
+
                 Object resource = exporter.exportResource(resourceId);
                 if (resource instanceof JSONObject) {
                     xml = exporter.transformToXml((JSONObject) resource);
@@ -151,8 +151,9 @@ public class ExportDocTask implements Callable<String> {
                 } catch (TimeoutException ex) {
                     Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
             }
+            exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
+            System.err.println("Start: " + start + " End: " + System.currentTimeMillis());
 
         } catch (IOException ex) {
             Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);

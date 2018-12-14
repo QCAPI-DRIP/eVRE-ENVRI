@@ -10,7 +10,6 @@ import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import gr.forth.ics.isl.exporter.CatalogueExporter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;

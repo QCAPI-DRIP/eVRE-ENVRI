@@ -12,8 +12,8 @@ curl -X PUT -H Content-Type:text/turtle  -T Mapping115_0ca0eeb1-41fd-4b25-bbea-0
 
 
 ---------------------Queries-------------------------
-SELECT mean(upper), Stddev(upper) FROM "mydb"."autogen"."benchmarkConversion_nl_uva_sne_vre4eic_benchmarkcat_Main" WHERE "upper" > 0 AND "mapping_name"='Mapping115' GROUP BY "num_of_consumers", "records_size"
+SELECT mean(upper), Stddev(upper), count(upper) AS count FROM "mydb"."autogen"."benchmarkConversion_nl_uva_sne_vre4eic_benchmarkcat_Main" WHERE "upper" > 0 GROUP BY "num_of_consumers", "records_size"
 
-SELECT mean(upper), Stddev(upper) FROM "mydb"."autogen"."exportDocuments.nl.uva.sne.vre4eic.model.ExportDocTask" WHERE "upper" > 0 GROUP BY time(:interval:), "mapping_name", "records_size", "source"
+SELECT mean(upper), Stddev(upper), count(upper) AS count FROM "mydb"."autogen"."exportDocuments.nl.uva.sne.vre4eic.model.ExportDocTask" WHERE "upper" > 0 GROUP BY "mapping_name", "records_size", "source"
 
-SELECT "mean"  FROM "mydb"."autogen"."handleDelivery_nl_uva_sne_vre4eic_cat_exporter_Worker" WHERE "mean" > 0 GROUP BY "source", "records_size", "mapping_name"
+SELECT mean("mean"), Stddev(mean), count(mean) FROM "mydb"."autogen"."handleDelivery_nl_uva_sne_vre4eic_cat_exporter_Worker" WHERE "mean" > 0 GROUP BY "source", "records_size", "mapping_name"

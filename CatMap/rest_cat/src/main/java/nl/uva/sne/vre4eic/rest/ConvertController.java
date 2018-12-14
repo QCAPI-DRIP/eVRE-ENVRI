@@ -72,7 +72,9 @@ public class ConvertController {
             @RequestParam(value = "limit", required = false) int limit,
             @RequestParam(value = "export_id") String exportID) {
         try {
+            long start = System.currentTimeMillis();
             ProcessingStatus status = service.doProcess(catalogueURL, mappingURL, generatorURL, limit, exportID);
+            System.err.println("Start: " + start + " End: " + System.currentTimeMillis());
             return status;
         } catch (MalformedURLException ex) {
             Logger.getLogger(ConvertController.class.getName()).log(Level.SEVERE, null, ex);
