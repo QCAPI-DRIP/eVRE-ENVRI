@@ -174,7 +174,7 @@ public class ExportDocTask implements Callable<String> {
             File benchmarkFile = new File(filePath);
             if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
                 try (FileOutputStream out = new FileOutputStream(benchmarkFile)) {
-                    try (InputStream in = sardine.get(filePath)) {
+                    try (InputStream in = sardine.get("http://" + webdavHost + "/benchmark/" + csvFileName)) {
                         IOUtils.copy(in, out);
                     }
                 }
@@ -188,12 +188,13 @@ public class ExportDocTask implements Callable<String> {
             for (Tag tag : tags) {
                 csvHeader.append(tag.getKey()).append(",");
             }
-
+            csvLine.append("\n");
+            csvHeader.append("\n");
             if (!benchmarkFile.exists()) {
-                csvHeader.append("\n").append(csvLine.toString()).append("\n");
+                csvHeader.append(csvLine.toString());
                 Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
             } else {
-                Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get(filePath), csvLine.toString().getBytes(), StandardOpenOption.APPEND);
             }
             sardine.put("http://" + webdavHost + "/benchmark/" + csvFileName, benchmarkFile, "text/csv");
 

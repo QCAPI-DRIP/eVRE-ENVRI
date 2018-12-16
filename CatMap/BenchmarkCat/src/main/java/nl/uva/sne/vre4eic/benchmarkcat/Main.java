@@ -9,10 +9,12 @@ package nl.uva.sne.vre4eic.benchmarkcat;
 //import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
 import java.io.File;
+import java.io.FileOutputStream;
 //import io.micrometer.influx.InfluxConfig;
 //import io.micrometer.influx.InfluxConsistency;
 //import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -169,21 +171,25 @@ public class Main {
             System.err.println("Records: " + count);
             Thread.sleep(200);
         }
-        csvHeader.append("start").append(",").append("end").append(",");
-        for (Tag tag : tags) {
-            csvHeader.append(tag.getKey()).append(",");
-        }
+        String csvFileName = Main.class.getName() + ".csv";
+        String filePath = System.getProperty("user.home") + File.separator + csvFileName;
+        File benchmarkFile = new File(filePath);
+
         csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
         for (Tag tag : tags) {
             csvLine.append(tag.getValue()).append(",");
         }
-        String filePath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator + Main.class.getName() + ".csv";
-        File f = new File(filePath);
-        if (!f.exists()) {
-            csvHeader.append("\n").append(csvLine.toString()).append("\n");
+        csvHeader.append("start").append(",").append("end").append(",");
+        for (Tag tag : tags) {
+            csvHeader.append(tag.getKey()).append(",");
+        }
+        csvLine.append("\n");
+        csvHeader.append("\n");
+        if (!benchmarkFile.exists()) {
+            csvHeader.append(csvLine.toString());
             Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
         } else {
-            Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(filePath), csvLine.toString().getBytes(), StandardOpenOption.APPEND);
         }
 
     }

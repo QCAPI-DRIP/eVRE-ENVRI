@@ -227,11 +227,10 @@ public class Worker {
                     }
                     File rdfFile = new File(outputRfdFolder + File.separator + fileName + ".ttl");
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "fileName: {0}", fileName);
-                    tags.add(Tag.of("rdf.file.size", String.valueOf(rdfFile.length())));
 
 //                    rdf.write(new PrintStream(rdfFile), "application/rdf+xml");
                     rdf.write(new PrintStream(rdfFile), "text/turtle");
-
+                    tags.add(Tag.of("rdf.file.size", String.valueOf(rdfFile.length())));
                     Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Saved file :{0}", rdfFile.getAbsolutePath());
 
                     if (webdavHost != null) {
@@ -263,7 +262,7 @@ public class Worker {
                         File benchmarkFile = new File(filePath);
                         if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
                             try (FileOutputStream out = new FileOutputStream(benchmarkFile)) {
-                                try (InputStream in = sardine.get(filePath)) {
+                                try (InputStream in = sardine.get("http://" + webdavHost + "/benchmark/" + csvFileName)) {
                                     IOUtils.copy(in, out);
                                 }
                             }
@@ -277,12 +276,13 @@ public class Worker {
                         for (Tag tag : tags) {
                             csvHeader.append(tag.getKey()).append(",");
                         }
-
+                        csvLine.append("\n");
+                        csvHeader.append("\n");
                         if (!benchmarkFile.exists()) {
-                            csvHeader.append("\n").append(csvLine.toString()).append("\n");
+                            csvHeader.append(csvLine.toString());
                             Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
                         } else {
-                            Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+                            Files.write(Paths.get(filePath), csvLine.toString().getBytes(), StandardOpenOption.APPEND);
                         }
                         sardine.put("http://" + webdavHost + "/benchmark/" + csvFileName, benchmarkFile, "text/csv");
                     }
