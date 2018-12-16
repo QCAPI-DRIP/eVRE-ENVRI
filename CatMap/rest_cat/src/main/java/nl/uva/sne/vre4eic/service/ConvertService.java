@@ -9,7 +9,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import gr.forth.ics.isl.exporter.CatalogueExporter;
-import io.micrometer.core.instrument.MeterRegistry;
+//import io.micrometer.core.instrument.MeterRegistry;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,8 +45,8 @@ public class ConvertService {
     @Autowired
     MetricsEndpoint endpoint;
 //
-    @Autowired
-    MeterRegistry meterRegistry;
+//    @Autowired
+//    MeterRegistry meterRegistry;
 
     Map<String, Future<String>> taskMap = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class ConvertService {
 //            String queueName = path.substring(path.lastIndexOf('/') + 1);
             String queueName = "metadata_records";
             ExportDocTask task = new ExportDocTask(catalogueURL, connectionFactory.getRabbitConnectionFactory(), queueName, mappingURL, generatorURL, limit, exportID);
-            task.setMeterRegistry(meterRegistry);
+//            task.setMeterRegistry(meterRegistry);
             convertTask = exec.submit(task);
             taskMap.put(taskID, convertTask);
 

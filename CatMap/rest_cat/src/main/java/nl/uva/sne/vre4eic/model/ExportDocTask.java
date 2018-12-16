@@ -5,6 +5,8 @@
  */
 package nl.uva.sne.vre4eic.model;
 
+import com.github.sardine.Sardine;
+import com.github.sardine.SardineFactory;
 import gr.forth.ics.isl.exporter.RDFExporter;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -17,11 +19,17 @@ import gr.forth.ics.isl.exporter.OGCCSWExporter;
 import gr.forth.ics.isl.util.XML;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
+import java.io.File;
+import java.io.FileOutputStream;
+//import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +51,7 @@ import static nl.uva.sne.vre4eic.util.Util.isCKAN;
 import static nl.uva.sne.vre4eic.util.Util.isCSW;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -59,14 +68,17 @@ public class ExportDocTask implements Callable<String> {
 //    @Autowired
 //    MetricsEndpoint endpoint;
 //    @Autowired
-    private MeterRegistry meterRegistry;
-
+//    private MeterRegistry meterRegistry;
     private final String queue;
     private final String mappingURL;
     private final String generatorURL;
     private final Integer limit;
     private final String exportID;
 //    private final Counter recordsCounter;
+
+    private static StringBuilder csvHeader = new StringBuilder();
+    private static StringBuilder csvLine = new StringBuilder();
+    static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
@@ -84,9 +96,9 @@ public class ExportDocTask implements Callable<String> {
 //        this.recordsCounter = meterRegistry.counter("export.task.num", exportID, "records");
     }
 
-    private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException {
+    private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException, IOException {
         long start = System.currentTimeMillis();
-        Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
+//        Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
         try {
             CatalogueExporter exporter = getExporter(catalogueURL);
             if (this.limit != null && this.limit > -1) {
@@ -94,14 +106,14 @@ public class ExportDocTask implements Callable<String> {
             }
             String path = new URL(mappingURL).getPath();
             String mappingName = FilenameUtils.removeExtension(path.substring(path.lastIndexOf('/') + 1));
-            Timer.Sample getDataSetIdsTimer = Timer.start(this.meterRegistry);
+//            Timer.Sample getDataSetIdsTimer = Timer.start(this.meterRegistry);
             Collection<String> allResourceIDs = exporter.fetchAllDatasetUUIDs();
-            Collection<Tag> tags = new ArrayList<>();
+
             tags.add(Tag.of("source", catalogueURL));
             tags.add(Tag.of("mapping.name", mappingName));
             tags.add(Tag.of("exportID", exportID));
             tags.add(Tag.of("records.size", String.valueOf(allResourceIDs.size())));
-            getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs." + exporter.getClass().getName(), tags));
+//            getDataSetIdsTimer.stop(meterRegistry.timer("fetchAllDatasetUUIDs." + exporter.getClass().getName(), tags));
             String xml = null;
 
             String now = df.format(new Date());
@@ -152,12 +164,43 @@ public class ExportDocTask implements Callable<String> {
                     Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
-            System.err.println("Start: " + start + " End: " + System.currentTimeMillis());
+//            exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
+
+            String webdavHost = System.getenv("WEBDAV_HOST");
+
+            Sardine sardine = SardineFactory.begin();
+            String csvFileName = this.getClass().getName() + ".csv";
+            String filePath = System.getProperty("user.home") + File.separator + csvFileName;
+            File benchmarkFile = new File(filePath);
+            if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
+                try (FileOutputStream out = new FileOutputStream(benchmarkFile)) {
+                    try (InputStream in = sardine.get(filePath)) {
+                        IOUtils.copy(in, out);
+                    }
+                }
+            }
+
+            csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
+            for (Tag tag : tags) {
+                csvLine.append(tag.getValue()).append(",");
+            }
+            csvHeader.append("start").append(",").append("end").append(",");
+            for (Tag tag : tags) {
+                csvHeader.append(tag.getKey()).append(",");
+            }
+
+            if (!benchmarkFile.exists()) {
+                csvHeader.append("\n").append(csvLine.toString()).append("\n");
+                Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
+            } else {
+                Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+            }
+            sardine.put("http://" + webdavHost + "/benchmark/" + csvFileName, benchmarkFile, "text/csv");
 
         } catch (IOException ex) {
             Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     public CatalogueExporter getExporter(String catalogueURL) throws MalformedURLException, InterruptedException {
@@ -182,7 +225,7 @@ public class ExportDocTask implements Callable<String> {
      * @param meterRegistry the meterRegistry to set
      */
     public void setMeterRegistry(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
+//        this.meterRegistry = meterRegistry;
     }
 
 }

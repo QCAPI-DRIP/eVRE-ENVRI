@@ -128,22 +128,22 @@ services:
         #volumes:
             #- fuseki-data:/fuseki           
             
-    influx:
-        image: influxdb
-        environment:
-            INFLUXDB_DB: mydb
-        #volumes:
-            #- influx:/var/lib/influxdb
-        ports:
-            - "8086:8086"
-        deploy:
-            resources:
-                limits:
-                    cpus: '0.3'
-                    memory: 100M
-                reservations:
-                    cpus: '0.1'
-                    memory: 40M                
+    #influx:
+        #image: influxdb
+        #environment:
+            #INFLUXDB_DB: mydb
+        ##volumes:
+            ##- influx:/var/lib/influxdb
+        #ports:
+            #- "8086:8086"
+        #deploy:
+            #resources:
+                #limits:
+                    #cpus: '0.3'
+                    #memory: 100M
+                #reservations:
+                    #cpus: '0.1'
+                    #memory: 40M                
             
                     
     #rabbit-reporter :
@@ -180,21 +180,21 @@ services:
         #depends_on:
             #- influx    
             
-    chronograf:
-        image: chronograf
-        ports:
-            - 8888:8888
-        command: chronograf --influxdb-url=http://influx:8086
-        depends_on:
-            - influx
-        deploy:
-            resources:
-                limits:
-                    cpus: '0.1'
-                    memory: 50M
-                reservations:
-                    cpus: '0.01'
-                    memory: 20M      
+    #chronograf:
+        #image: chronograf
+        #ports:
+            #- 8888:8888
+        #command: chronograf --influxdb-url=http://influx:8086
+        #depends_on:
+            #- influx
+        #deploy:
+            #resources:
+                #limits:
+                    #cpus: '0.1'
+                    #memory: 50M
+                #reservations:
+                    #cpus: '0.01'
+                    #memory: 20M      
 
     #kapacitor:
         #image: kapacitor

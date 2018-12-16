@@ -55,11 +55,11 @@
             <artifactId>spring-metrics</artifactId>
             <version>0.5.0.RELEASE</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-influx</artifactId>
             <version>1.0.5</version>
-        </dependency>
+        </dependency>-->
 
 
 

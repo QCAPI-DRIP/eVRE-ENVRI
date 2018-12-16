@@ -5,16 +5,23 @@
  */
 package nl.uva.sne.vre4eic.benchmarkcat;
 
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Counter;
+//import io.micrometer.core.instrument.Clock;
+//import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.influx.InfluxConfig;
-import io.micrometer.influx.InfluxConsistency;
-import io.micrometer.influx.InfluxMeterRegistry;
+import java.io.File;
+//import io.micrometer.influx.InfluxConfig;
+//import io.micrometer.influx.InfluxConsistency;
+//import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -29,87 +36,95 @@ public class Main {
     private static final String CAT_BASE_URL = "http://" + HOST + ":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
-    private static final int LIMIT = 5;
+    private static final int LIMIT = 10;
     private static final String QUEUE_NAME = "metadata_records";
     private static final String RABBIT_API_URL = "http://" + HOST + ":15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
     private static final String RABBIT_PASS = "guest";
     private static final String INFLUXDB_URI = "http://" + HOST + ":8086";
-    private static InfluxConfig influxConfig;
-    private static InfluxMeterRegistry meterRegistry;
+//    private static InfluxConfig influxConfig;
+//    private static InfluxMeterRegistry meterRegistry;
+    private static final StringBuilder csvHeader = new StringBuilder();
+    private static final StringBuilder csvLine = new StringBuilder();
+    static Collection<Tag> tags = new ArrayList<>();
 
     private static void init() {
-        if (INFLUXDB_URI == null) {
-            influxConfig = InfluxConfig.DEFAULT;
-        } else {
-            influxConfig = new InfluxConfig() {
-                @Override
-                public String prefix() {
-                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String db() {
-                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public InfluxConsistency consistency() {
-                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String userName() {
-                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String password() {
-                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionPolicy() {
-                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionDuration() {
-                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public Integer retentionReplicationFactor() {
-                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionShardDuration() {
-                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String uri() {
-                    return INFLUXDB_URI;
-                }
-
-                @Override
-                public boolean compressed() {
-                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public boolean autoCreateDb() {
-                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String get(String key) {
-                    return null;
-                }
-            };
-        }
-        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
+//        if (INFLUXDB_URI == null) {
+//            influxConfig = InfluxConfig.DEFAULT;
+//        } else {
+//            influxConfig = new InfluxConfig() {
+//                @Override
+//                public String prefix() {
+//                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String db() {
+//                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public InfluxConsistency consistency() {
+//                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String userName() {
+//                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String password() {
+//                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionPolicy() {
+//                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionDuration() {
+//                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public Integer retentionReplicationFactor() {
+//                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionShardDuration() {
+//                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String uri() {
+//                    return INFLUXDB_URI;
+//                }
+//
+//                @Override
+//                public boolean compressed() {
+//                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public boolean autoCreateDb() {
+//                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String get(String key) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public Duration step() {
+//                    return Duration.ofMillis(200);
+//                }
+//            };
+//        }
+//        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
 
     }
 
@@ -117,11 +132,11 @@ public class Main {
         try {
             init();
             for (int i = 0; i < 1; i++) {
-                long start = System.currentTimeMillis();
+
                 benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
-                System.err.println("Start: " + start + " End: " + System.currentTimeMillis());
+
             }
-            meterRegistry.close();
+//            meterRegistry.close();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,13 +144,14 @@ public class Main {
 
     private static void benchmarkConversion(String catalogueURL, String[] mapping, String exportID) throws IOException, InterruptedException {
         String mappingName = mapping[0].substring(mapping[0].lastIndexOf("/") + 1, mapping[0].lastIndexOf("."));
-        Collection<Tag> tags = new ArrayList<>();
         tags.add(Tag.of("source", catalogueURL));
         tags.add(Tag.of("mapping.name", mappingName));
         tags.add(Tag.of("exportID", exportID));
         int numOfConsumers = Util.getNumberOfConsumers(QUEUE_NAME, RABBIT_API_URL, RABBIT_USER, RABBIT_PASS);
         tags.add(Tag.of("num.of.consumers", String.valueOf(numOfConsumers)));
         tags.add(Tag.of("records.size", String.valueOf(LIMIT)));
+
+        long start = System.currentTimeMillis();
 
         ConvertControllerClient convertClient = new ConvertControllerClient(CAT_BASE_URL);
         String resp = convertClient.convert(catalogueURL, mapping[0], mapping[1], String.valueOf(LIMIT), exportID);
@@ -144,18 +160,32 @@ public class Main {
         String folderName = mappingName + "/" + exportID;
         JSONArray res = convertClient.listResults(folderName);
         int count = (res.length() - 1) / 2;
-        Counter startCounter = meterRegistry.counter("start.benchmark.conversion.", tags);
-        startCounter.increment();
+//        Counter startCounter = meterRegistry.counter("start.benchmark.conversion.", tags);
+//        startCounter.increment();
+//        AtomicInteger n = meterRegistry.gauge("numberGauge", new AtomicInteger(0));
         while (count < LIMIT) {
             res = convertClient.listResults(folderName);
             count = (res.length() - 1) / 2;
             System.err.println("Records: " + count);
             Thread.sleep(200);
         }
-        System.err.println(startCounter.count());
-        startCounter.close();
-        System.err.println(startCounter.count());
-//        System.err.println(((res.length()-1) / 2));
+        csvHeader.append("start").append(",").append("end").append(",");
+        for (Tag tag : tags) {
+            csvHeader.append(tag.getKey()).append(",");
+        }
+        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
+        for (Tag tag : tags) {
+            csvLine.append(tag.getValue()).append(",");
+        }
+        String filePath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator + Main.class.getName() + ".csv";
+        File f = new File(filePath);
+        if (!f.exists()) {
+            csvHeader.append("\n").append(csvLine.toString()).append("\n");
+            Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
+        } else {
+            Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+        }
+
     }
 
 }

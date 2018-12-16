@@ -7,6 +7,7 @@ package nl.uva.sne.vre4eic.cat_exporter;
 
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
+import com.github.sardine.impl.SardineException;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -28,18 +29,22 @@ import org.xml.sax.SAXException;
 import eu.delving.x3ml.X3MLEngine;
 import eu.delving.x3ml.X3MLGeneratorPolicy;
 import eu.delving.x3ml.engine.Generator;
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.MeterRegistry;
+//import io.micrometer.core.instrument.Clock;
+//import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.influx.InfluxConfig;
-import io.micrometer.influx.InfluxConsistency;
-import io.micrometer.influx.InfluxMeterRegistry;
+//import io.micrometer.core.instrument.Timer;
+//import io.micrometer.influx.InfluxConfig;
+//import io.micrometer.influx.InfluxConsistency;
+//import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +53,7 @@ import java.util.TimeZone;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
@@ -59,10 +65,13 @@ public class Worker {
     private final String webdavHost;
     private String webdavUser;
     private String webdavPass;
+    private static StringBuilder csvHeader = new StringBuilder();
+    private static StringBuilder csvLine = new StringBuilder();
+    static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
-    private final InfluxConfig influxConfig;
+//    private final InfluxConfig influxConfig;
 
     public Worker(String rabbitMQHost, String webdavHost, String webdavUser, String webdavPass, String taskQeueName, String output, String influxDBURI) throws IOException {
         this.taskQeueName = taskQeueName;
@@ -76,77 +85,77 @@ public class Worker {
             this.webdavPass = webdavPass;
         }
         df.setTimeZone(tz);
-        if (influxDBURI == null) {
-            this.influxConfig = InfluxConfig.DEFAULT;
-        } else {
-            influxConfig = new InfluxConfig() {
-                @Override
-                public String prefix() {
-                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String db() {
-                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public InfluxConsistency consistency() {
-                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String userName() {
-                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String password() {
-                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionPolicy() {
-                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionDuration() {
-                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public Integer retentionReplicationFactor() {
-                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String retentionShardDuration() {
-                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String uri() {
-                    return influxDBURI;
-                }
-
-                @Override
-                public boolean compressed() {
-                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public boolean autoCreateDb() {
-                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public String get(String key) {
-                    return null;
-                }
-
-            };
-        }
+//        if (influxDBURI == null) {
+//            this.influxConfig = InfluxConfig.DEFAULT;
+//        } else {
+//            influxConfig = new InfluxConfig() {
+//                @Override
+//                public String prefix() {
+//                    return InfluxConfig.super.prefix(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String db() {
+//                    return InfluxConfig.super.db(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public InfluxConsistency consistency() {
+//                    return InfluxConfig.super.consistency(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String userName() {
+//                    return InfluxConfig.super.userName(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String password() {
+//                    return InfluxConfig.super.password(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionPolicy() {
+//                    return InfluxConfig.super.retentionPolicy(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionDuration() {
+//                    return InfluxConfig.super.retentionDuration(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public Integer retentionReplicationFactor() {
+//                    return InfluxConfig.super.retentionReplicationFactor(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String retentionShardDuration() {
+//                    return InfluxConfig.super.retentionShardDuration(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String uri() {
+//                    return influxDBURI;
+//                }
+//
+//                @Override
+//                public boolean compressed() {
+//                    return InfluxConfig.super.compressed(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public boolean autoCreateDb() {
+//                    return InfluxConfig.super.autoCreateDb(); //To change body of generated methods, choose Tools | Templates.
+//                }
+//
+//                @Override
+//                public String get(String key) {
+//                    return null;
+//                }
+//
+//            };
+//        }
 
         Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Consuming from qeue: {0}", taskQeueName);
     }
@@ -155,13 +164,11 @@ public class Worker {
         long consumeStart = System.currentTimeMillis();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitMQHost);
-        MeterRegistry meterRegistry;
+//        MeterRegistry meterRegistry;
 
-        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
-
-        MicrometerMetricsCollector metricsCollector = new MicrometerMetricsCollector(meterRegistry);
-        factory.setMetricsCollector(metricsCollector);
-
+//        meterRegistry = new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
+//        MicrometerMetricsCollector metricsCollector = new MicrometerMetricsCollector(meterRegistry);
+//        factory.setMetricsCollector(metricsCollector);
         final Connection connection = factory.newConnection();
         final Channel channel = connection.createChannel();
 
@@ -172,7 +179,7 @@ public class Worker {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException, FileNotFoundException {
                 long start = System.currentTimeMillis();
-                Timer.Sample handleDeliverySample = Timer.start(meterRegistry);
+//                Timer.Sample handleDeliverySample = Timer.start(meterRegistry);
                 Collection<Tag> tags = new ArrayList<>();
 
                 byte[] decodedBytes = Base64.decodeBase64(body);
@@ -250,6 +257,34 @@ public class Worker {
 
                         sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".xml", xmlCkan.getBytes());
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
+
+                        String csvFileName = this.getClass().getName() + this.hashCode() + ".csv";
+                        String filePath = System.getProperty("user.home") + File.separator + csvFileName;
+                        File benchmarkFile = new File(filePath);
+                        if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
+                            try (FileOutputStream out = new FileOutputStream(benchmarkFile)) {
+                                try (InputStream in = sardine.get(filePath)) {
+                                    IOUtils.copy(in, out);
+                                }
+                            }
+                        }
+
+                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
+                        for (Tag tag : tags) {
+                            csvLine.append(tag.getValue()).append(",");
+                        }
+                        csvHeader.append("start").append(",").append("end").append(",");
+                        for (Tag tag : tags) {
+                            csvHeader.append(tag.getKey()).append(",");
+                        }
+
+                        if (!benchmarkFile.exists()) {
+                            csvHeader.append("\n").append(csvLine.toString()).append("\n");
+                            Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
+                        } else {
+                            Files.write(Paths.get(filePath), csvLine.append("\n").toString().getBytes(), StandardOpenOption.APPEND);
+                        }
+                        sardine.put("http://" + webdavHost + "/benchmark/" + csvFileName, benchmarkFile, "text/csv");
                     }
 //                    Logger.getLogger(Worker.class.getName()).log(Level.INFO, "Stop timer. Tags: {0}", tags);
 
@@ -270,10 +305,7 @@ public class Worker {
                         generator.delete();
                     }
                 }
-                handleDeliverySample.stop(meterRegistry.timer("Worker."+this.hashCode()+".handleDelivery.", tags));
-                System.err.println("messageCount: " + messageCount+" Start: " + start + " End: " + System.currentTimeMillis());
-                
-                
+
             }
         };
         channel.basicConsume(taskQeueName, false, consumer);
