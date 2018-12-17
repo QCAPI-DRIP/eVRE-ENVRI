@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TimeZone;
+import java.util.UUID;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -65,6 +66,7 @@ public class Worker {
     private final String webdavHost;
     private String webdavUser;
     private String webdavPass;
+    private String workerID = UUID.randomUUID().toString();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
@@ -254,7 +256,7 @@ public class Worker {
                         sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".xml", xmlCkan.getBytes());
 //                        sardine.put("http://" + webdavHost + "/" + webdavFolder + "/" + fileName + ".json", jsonCkan.getBytes());
 
-                        String csvFileName = this.getClass().getName() + this.hashCode() + ".csv";
+                        String csvFileName = this.getClass().getName() + workerID + ".csv";
                         String filePath = System.getProperty("user.home") + File.separator + csvFileName;
                         File benchmarkFile = new File(filePath);
                         if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
@@ -266,12 +268,11 @@ public class Worker {
                         }
                         StringBuilder csvHeader = new StringBuilder();
                         StringBuilder csvLine = new StringBuilder();
-                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",").append( this.hashCode()).append(",");
+                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",").append(workerID).append(",");
                         for (Tag tag : tags) {
                             csvLine.append(tag.getValue()).append(",");
                         }
-                       
-                        
+
                         csvHeader.append("start").append(",").append("end").append(",").append("worker_id").append(",");
                         for (Tag tag : tags) {
                             csvHeader.append(tag.getKey()).append(",");

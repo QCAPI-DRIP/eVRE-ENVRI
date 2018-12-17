@@ -131,7 +131,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         try {
             init();
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 2; i++) {
 
                 benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
 
