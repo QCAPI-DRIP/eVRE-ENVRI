@@ -23,42 +23,42 @@ services:
             
             
                                 
-    #rest-cat:
-        #image: rest-cat
-        #deploy:
-            #restart_policy:
-                #condition: on-failure
-        #environment:
-            #RABBIT_HOST: rabbit
-            #RABBIT_PORT: 5672
-            #RABBIT_USERNAME: guest
-            #RABBIT_PASSWORD: guest
-            #INFLUX_URI: http://influx:8086
-            #WEBDAV_HOST: webdav            
-        #ports:
-            #- 8083:8080      
-        #depends_on:
-            #- rabbit          
-            #- influx                   
+    rest-cat:
+        image: rest-cat
+        deploy:
+            restart_policy:
+                condition: on-failure
+        environment:
+            RABBIT_HOST: rabbit
+            RABBIT_PORT: 5672
+            RABBIT_USERNAME: guest
+            RABBIT_PASSWORD: guest
+            INFLUX_URI: http://influx:8086
+            WEBDAV_HOST: webdav            
+        ports:
+            - 8083:8080      
+        depends_on:
+            - rabbit          
+            - influx                   
             
-    #cat-worker:
-        #image: cat-worker
-        #deploy:
-            #restart_policy:
-                #condition: on-failure
-            #replicas: 1          
-        #environment:
-            #RABBIT_HOST: rabbit
-            #RABBIT_PORT: 5672
-            #RABBIT_USERNAME: guest
-            #RABBIT_PASSWORD: guest
-            #INFLUX_URI: http://influx:8086
-            #WEBDAV_HOST: webdav
-            #WEBDAV_USERNAME: user
-            #WEBDAV_PASSWORD: resu      
-        #depends_on:
-            #- rabbit   
-            #- webdav
+    cat-worker:
+        image: cat-worker
+        deploy:
+            restart_policy:
+                condition: on-failure
+            replicas: 1          
+        environment:
+            RABBIT_HOST: rabbit
+            RABBIT_PORT: 5672
+            RABBIT_USERNAME: guest
+            RABBIT_PASSWORD: guest
+            INFLUX_URI: http://influx:8086
+            WEBDAV_HOST: webdav
+            WEBDAV_USERNAME: user
+            WEBDAV_PASSWORD: resu      
+        depends_on:
+            - rabbit   
+            - webdav
             
             
     #prise:
