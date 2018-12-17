@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -191,7 +192,7 @@ public class Main {
         } else {
             Files.write(Paths.get(filePath), csvLine.toString().getBytes(), StandardOpenOption.APPEND);
         }
-
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Elapsed: {0}", System.currentTimeMillis() - start);
     }
 
 }
