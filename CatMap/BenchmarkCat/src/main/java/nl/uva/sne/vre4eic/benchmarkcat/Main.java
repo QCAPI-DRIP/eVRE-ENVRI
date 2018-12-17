@@ -47,7 +47,7 @@ public class Main {
     private static final String INFLUXDB_URI = "http://" + HOST + ":8086";
 //    private static InfluxConfig influxConfig;
 //    private static InfluxMeterRegistry meterRegistry;
-    static Collection<Tag> tags = new ArrayList<>();
+    
 
     private static void init() {
 //        if (INFLUXDB_URI == null) {
@@ -145,6 +145,7 @@ public class Main {
 
     private static void benchmarkConversion(String catalogueURL, String[] mapping, String exportID) throws IOException, InterruptedException {
         String mappingName = mapping[0].substring(mapping[0].lastIndexOf("/") + 1, mapping[0].lastIndexOf("."));
+        Collection<Tag> tags = new ArrayList<>();
         tags.add(Tag.of("source", catalogueURL));
         tags.add(Tag.of("mapping.name", mappingName));
         tags.add(Tag.of("exportID", exportID));

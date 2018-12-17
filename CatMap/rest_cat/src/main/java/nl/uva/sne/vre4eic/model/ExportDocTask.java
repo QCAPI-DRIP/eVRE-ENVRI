@@ -47,6 +47,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import nl.uva.sne.vre4eic.util.Util;
 import static nl.uva.sne.vre4eic.util.Util.isCKAN;
 import static nl.uva.sne.vre4eic.util.Util.isCSW;
 import org.apache.commons.codec.binary.Base64;
@@ -75,7 +76,6 @@ public class ExportDocTask implements Callable<String> {
     private final Integer limit;
     private final String exportID;
 //    private final Counter recordsCounter;
-    static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
@@ -95,9 +95,8 @@ public class ExportDocTask implements Callable<String> {
 
     private void exportDocuments(String catalogueURL, String exportID) throws MalformedURLException, GenericException, InterruptedException, TransformerConfigurationException, TransformerException, ParserConfigurationException, SAXException, IOException {
         long start = System.currentTimeMillis();
-//        Timer.Sample exportDocumentsTimer = Timer.start(this.meterRegistry);
         try {
-            CatalogueExporter exporter = getExporter(catalogueURL);
+            CatalogueExporter exporter = Util.getExporter(catalogueURL);
             if (this.limit != null && this.limit > -1) {
                 exporter.setLimit(limit);
             }
@@ -106,6 +105,7 @@ public class ExportDocTask implements Callable<String> {
 //            Timer.Sample getDataSetIdsTimer = Timer.start(this.meterRegistry);
             Collection<String> allResourceIDs = exporter.fetchAllDatasetUUIDs();
 
+            Collection<Tag> tags = new ArrayList<>();
             tags.add(Tag.of("source", catalogueURL));
             tags.add(Tag.of("mapping.name", mappingName));
             tags.add(Tag.of("exportID", exportID));
@@ -168,7 +168,7 @@ public class ExportDocTask implements Callable<String> {
                 webdavHost = "localhost";
             }
             Sardine sardine = SardineFactory.begin();
-            String csvFileName = this.getClass().getName() + ".csv";
+            String csvFileName = getClass().getName() + ".csv";
             String filePath = System.getProperty("user.home") + File.separator + csvFileName;
             File benchmarkFile = new File(filePath);
             if (sardine.exists("http://" + webdavHost + "/benchmark/" + csvFileName)) {
@@ -180,20 +180,27 @@ public class ExportDocTask implements Callable<String> {
             }
             StringBuilder csvHeader = new StringBuilder();
             StringBuilder csvLine = new StringBuilder();
+            String prefix = "";
             csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
             for (Tag tag : tags) {
-                csvLine.append(tag.getValue()).append(",");
-            }
-            csvHeader.append("start").append(",").append("end").append(",");
-            for (Tag tag : tags) {
-                csvHeader.append(tag.getKey()).append(",");
+                csvLine.append(prefix);
+                prefix = ",";
+                csvLine.append(tag.getValue());
             }
             csvLine.append("\n");
+            prefix = "";
+            csvHeader.append("start").append(",").append("end").append(",");
+            for (Tag tag : tags) {
+                csvHeader.append(prefix);
+                prefix = ",";
+                csvHeader.append(tag.getKey());
+            }
             csvHeader.append("\n");
             if (!benchmarkFile.exists()) {
                 csvHeader.append(csvLine.toString());
                 Files.write(Paths.get(filePath), csvHeader.toString().getBytes(), StandardOpenOption.CREATE);
             } else {
+                System.err.println(csvLine.toString());
                 Files.write(Paths.get(filePath), csvLine.toString().getBytes(), StandardOpenOption.APPEND);
             }
             sardine.put("http://" + webdavHost + "/benchmark/" + csvFileName, benchmarkFile, "text/csv");
@@ -202,17 +209,6 @@ public class ExportDocTask implements Callable<String> {
             Logger.getLogger(ExportDocTask.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-
-    public CatalogueExporter getExporter(String catalogueURL) throws MalformedURLException, InterruptedException {
-        if (isCKAN(catalogueURL)) {
-            return new D4ScienceExporter(catalogueURL);
-        }
-        if (isCSW(catalogueURL + "/csw?REQUEST=GetCapabilities&SERVICE=CSW&VERSION=2.0.2&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0")) {
-            return new OGCCSWExporter(catalogueURL);
-        } else {
-            return new RDFExporter(catalogueURL);
-        }
     }
 
     @Override

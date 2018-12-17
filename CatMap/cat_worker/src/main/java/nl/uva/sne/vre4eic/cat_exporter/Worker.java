@@ -65,7 +65,6 @@ public class Worker {
     private final String webdavHost;
     private String webdavUser;
     private String webdavPass;
-    static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSS'Z'");
@@ -178,7 +177,6 @@ public class Worker {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException, FileNotFoundException {
                 long start = System.currentTimeMillis();
 //                Timer.Sample handleDeliverySample = Timer.start(meterRegistry);
-                Collection<Tag> tags = new ArrayList<>();
 
                 byte[] decodedBytes = Base64.decodeBase64(body);
                 String message = new String(decodedBytes, "UTF-8");
@@ -212,6 +210,7 @@ public class Worker {
                     String fileName = mappingName + "_" + ckanRecordID;
                     String exportID = jObject.getString("export_id");
 
+                    Collection<Tag> tags = new ArrayList<>();
                     tags.add(Tag.of("source", catalogueURL));
                     tags.add(Tag.of("mapping.name", mappingName));
                     tags.add(Tag.of("exportID", exportID));

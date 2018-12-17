@@ -8,6 +8,10 @@ package nl.uva.sne.vre4eic.util;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
+import gr.forth.ics.isl.exporter.CatalogueExporter;
+import gr.forth.ics.isl.exporter.D4ScienceExporter;
+import gr.forth.ics.isl.exporter.OGCCSWExporter;
+import gr.forth.ics.isl.exporter.RDFExporter;
 import gr.forth.ics.isl.util.XML;
 import java.io.BufferedReader;
 import java.io.File;
@@ -261,6 +265,17 @@ public class Util {
             return false;
         } catch (IOException ex) {
             return false;
+        }
+    }
+
+    public static CatalogueExporter getExporter(String catalogueURL) throws MalformedURLException, InterruptedException {
+        if (isCKAN(catalogueURL)) {
+            return new D4ScienceExporter(catalogueURL);
+        }
+        if (isCSW(catalogueURL + "/csw?REQUEST=GetCapabilities&SERVICE=CSW&VERSION=2.0.2&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0")) {
+            return new OGCCSWExporter(catalogueURL);
+        } else {
+            return new RDFExporter(catalogueURL);
         }
     }
 
