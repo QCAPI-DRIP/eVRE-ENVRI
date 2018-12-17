@@ -35,8 +35,8 @@ import org.json.JSONArray;
  */
 public class Main {
 
-    private static final String HOST = "localhost";//"drip.vlan400.uvalight.net"; //"localhost"
-    private static final String CAT_BASE_URL = "http://" + HOST + ":8080/rest/"; //"http://" + HOST + ":8083/catalogue_mapper/"; //"http://" + HOST + ":8083/catalogue_mapper/";
+    private static final String HOST = "drip.vlan400.uvalight.net";//"drip.vlan400.uvalight.net"; //"localhost"
+    private static final String CAT_BASE_URL = "http://" + HOST + ":8083/catalogue_mapper/";  //"http://" + HOST + ":8083/catalogue_mapper/"; //"http://" + HOST + ":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
     private static final int LIMIT = 30;
@@ -47,7 +47,6 @@ public class Main {
     private static final String INFLUXDB_URI = "http://" + HOST + ":8086";
 //    private static InfluxConfig influxConfig;
 //    private static InfluxMeterRegistry meterRegistry;
-    
 
     private static void init() {
 //        if (INFLUXDB_URI == null) {

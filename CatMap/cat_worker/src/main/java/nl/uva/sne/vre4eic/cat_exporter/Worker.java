@@ -270,7 +270,9 @@ public class Worker {
                         for (Tag tag : tags) {
                             csvLine.append(tag.getValue()).append(",");
                         }
-                        csvHeader.append("start").append(",").append("end").append(",");
+                        csvLine.append(this.hashCode()).append(",");
+                        
+                        csvHeader.append("start").append(",").append("end").append(",").append("worker_id").append(",");
                         for (Tag tag : tags) {
                             csvHeader.append(tag.getKey()).append(",");
                         }
