@@ -266,7 +266,7 @@ public class Worker {
                         }
                         StringBuilder csvHeader = new StringBuilder();
                         StringBuilder csvLine = new StringBuilder();
-                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",").append("worker_id").append(",");
+                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",").append( this.hashCode()).append(",");
                         for (Tag tag : tags) {
                             csvLine.append(tag.getValue()).append(",");
                         }
