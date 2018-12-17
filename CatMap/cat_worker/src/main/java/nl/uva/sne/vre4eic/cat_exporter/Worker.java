@@ -266,11 +266,11 @@ public class Worker {
                         }
                         StringBuilder csvHeader = new StringBuilder();
                         StringBuilder csvLine = new StringBuilder();
-                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
+                        csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",").append("worker_id").append(",");
                         for (Tag tag : tags) {
                             csvLine.append(tag.getValue()).append(",");
                         }
-                        csvLine.append(this.hashCode()).append(",");
+                       
                         
                         csvHeader.append("start").append(",").append("end").append(",").append("worker_id").append(",");
                         for (Tag tag : tags) {
