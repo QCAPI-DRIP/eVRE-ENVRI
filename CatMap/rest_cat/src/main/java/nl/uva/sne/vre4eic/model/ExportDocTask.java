@@ -75,9 +75,6 @@ public class ExportDocTask implements Callable<String> {
     private final Integer limit;
     private final String exportID;
 //    private final Counter recordsCounter;
-
-    private static StringBuilder csvHeader = new StringBuilder();
-    private static StringBuilder csvLine = new StringBuilder();
     static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -167,7 +164,9 @@ public class ExportDocTask implements Callable<String> {
 //            exportDocumentsTimer.stop(meterRegistry.timer("exportDocuments." + ExportDocTask.class.getName(), tags));
 
             String webdavHost = System.getenv("WEBDAV_HOST");
-
+            if (webdavHost == null) {
+                webdavHost = "localhost";
+            }
             Sardine sardine = SardineFactory.begin();
             String csvFileName = this.getClass().getName() + ".csv";
             String filePath = System.getProperty("user.home") + File.separator + csvFileName;
@@ -179,7 +178,8 @@ public class ExportDocTask implements Callable<String> {
                     }
                 }
             }
-
+            StringBuilder csvHeader = new StringBuilder();
+            StringBuilder csvLine = new StringBuilder();
             csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
             for (Tag tag : tags) {
                 csvLine.append(tag.getValue()).append(",");

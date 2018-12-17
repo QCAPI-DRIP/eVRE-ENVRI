@@ -36,10 +36,10 @@ import org.json.JSONArray;
 public class Main {
 
     private static final String HOST = "localhost";//"drip.vlan400.uvalight.net"; //"localhost"
-    private static final String CAT_BASE_URL = "http://" + HOST + ":8083/catalogue_mapper/";
+    private static final String CAT_BASE_URL = "http://" + HOST + ":8080/rest/"; //"http://" + HOST + ":8083/catalogue_mapper/"; //"http://" + HOST + ":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
-    private static final int LIMIT = 10;
+    private static final int LIMIT = 30;
     private static final String QUEUE_NAME = "metadata_records";
     private static final String RABBIT_API_URL = "http://" + HOST + ":15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
@@ -47,8 +47,6 @@ public class Main {
     private static final String INFLUXDB_URI = "http://" + HOST + ":8086";
 //    private static InfluxConfig influxConfig;
 //    private static InfluxMeterRegistry meterRegistry;
-    private static final StringBuilder csvHeader = new StringBuilder();
-    private static final StringBuilder csvLine = new StringBuilder();
     static Collection<Tag> tags = new ArrayList<>();
 
     private static void init() {
@@ -173,9 +171,10 @@ public class Main {
             Thread.sleep(200);
         }
         String csvFileName = Main.class.getName() + ".csv";
-        String filePath = System.getProperty("user.home") + File.separator + csvFileName;
+        String filePath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator + csvFileName;
         File benchmarkFile = new File(filePath);
-
+        StringBuilder csvHeader = new StringBuilder();
+        StringBuilder csvLine = new StringBuilder();
         csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
         for (Tag tag : tags) {
             csvLine.append(tag.getValue()).append(",");

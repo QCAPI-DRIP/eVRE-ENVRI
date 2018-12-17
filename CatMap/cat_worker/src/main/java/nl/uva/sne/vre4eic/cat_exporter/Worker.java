@@ -65,8 +65,6 @@ public class Worker {
     private final String webdavHost;
     private String webdavUser;
     private String webdavPass;
-    private static StringBuilder csvHeader = new StringBuilder();
-    private static StringBuilder csvLine = new StringBuilder();
     static Collection<Tag> tags = new ArrayList<>();
 
     TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -267,7 +265,8 @@ public class Worker {
                                 }
                             }
                         }
-
+                        StringBuilder csvHeader = new StringBuilder();
+                        StringBuilder csvLine = new StringBuilder();
                         csvLine.append(start).append(",").append(System.currentTimeMillis()).append(",");
                         for (Tag tag : tags) {
                             csvLine.append(tag.getValue()).append(",");

@@ -12,53 +12,53 @@ services:
             - "5671:5671"
             - "15671:15671"
             - "5672:5672"
-        deploy:
-            resources:
-                limits:
-                    cpus: '0.5'
-                    memory: 300M
-                reservations:
-                    cpus: '0.2'
-                    memory: 200M
+        #deploy:
+            #resources:
+                #limits:
+                    #cpus: '0.5'
+                    #memory: 300M
+                #reservations:
+                    #cpus: '0.2'
+                    #memory: 200M
             
             
                                 
-    rest-cat:
-        image: rest-cat
-        deploy:
-            restart_policy:
-                condition: on-failure
-        environment:
-            RABBIT_HOST: rabbit
-            RABBIT_PORT: 5672
-            RABBIT_USERNAME: guest
-            RABBIT_PASSWORD: guest
-            INFLUX_URI: http://influx:8086
-            WEBDAV_HOST: webdav            
-        ports:
-            - 8083:8080      
-        depends_on:
-            - rabbit          
-            - influx                   
+    #rest-cat:
+        #image: rest-cat
+        #deploy:
+            #restart_policy:
+                #condition: on-failure
+        #environment:
+            #RABBIT_HOST: rabbit
+            #RABBIT_PORT: 5672
+            #RABBIT_USERNAME: guest
+            #RABBIT_PASSWORD: guest
+            #INFLUX_URI: http://influx:8086
+            #WEBDAV_HOST: webdav            
+        #ports:
+            #- 8083:8080      
+        #depends_on:
+            #- rabbit          
+            #- influx                   
             
-    cat-worker:
-        image: cat-worker
-        deploy:
-            restart_policy:
-                condition: on-failure
-            replicas: 1          
-        environment:
-            RABBIT_HOST: rabbit
-            RABBIT_PORT: 5672
-            RABBIT_USERNAME: guest
-            RABBIT_PASSWORD: guest
-            INFLUX_URI: http://influx:8086
-            WEBDAV_HOST: webdav
-            WEBDAV_USERNAME: user
-            WEBDAV_PASSWORD: resu      
-        depends_on:
-            - rabbit   
-            - webdav
+    #cat-worker:
+        #image: cat-worker
+        #deploy:
+            #restart_policy:
+                #condition: on-failure
+            #replicas: 1          
+        #environment:
+            #RABBIT_HOST: rabbit
+            #RABBIT_PORT: 5672
+            #RABBIT_USERNAME: guest
+            #RABBIT_PASSWORD: guest
+            #INFLUX_URI: http://influx:8086
+            #WEBDAV_HOST: webdav
+            #WEBDAV_USERNAME: user
+            #WEBDAV_PASSWORD: resu      
+        #depends_on:
+            #- rabbit   
+            #- webdav
             
             
     #prise:
@@ -107,14 +107,14 @@ services:
                 condition: on-failure
         #volumes:
             #- webdav:/var/www     
-        deploy:
-            resources:
-                limits:
-                    cpus: '0.3'
-                    memory: 50M
-                reservations:
-                    cpus: '0.1'
-                    memory: 20M            
+        #deploy:
+            #resources:
+                #limits:
+                    #cpus: '0.3'
+                    #memory: 50M
+                #reservations:
+                    #cpus: '0.1'
+                    #memory: 20M            
             
     #jena-fuseki: 
         #image: stain/jena-fuseki
