@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS main_benchmark (
 ) ENGINE=InnoDB;
 
 DROP TRIGGER IF EXISTS main_auto_id;
-CREATE TRIGGER auto_id 
+CREATE TRIGGER main_auto_id 
   BEFORE INSERT ON main_benchmark
   FOR EACH ROW
   SET new.uid = UUID_TO_BIN(UUID());

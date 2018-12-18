@@ -1,4 +1,6 @@
-sudo docker run -d -e MYSQL_ROOT_PASSWORD=123 mysql --secure-file-priv=
+sudo docker run -d -e MYSQL_ROOT_PASSWORD=123 -p 3306:3306 mysql --secure-file-priv='' 
+
+
 
 echo "start,end,worker_id,source,mapping.name,exportID,records.size,message.count,record.id,rdf.file.size" > nl.uva.sne.vre4eic.cat_exporter.Worker.csv
 for f in 'nl.uva.sne.vre4eic.cat_exporter.Worker$1'*.csv; do
@@ -29,4 +31,4 @@ sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'my
 
 
 
-sudo docker stop  $(sudo docker ps | grep mysql | awk '{print $1}')
+# sudo docker stop  $(sudo docker ps | grep mysql | awk '{print $1}')
