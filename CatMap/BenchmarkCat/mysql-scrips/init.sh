@@ -23,11 +23,14 @@ done
 sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c "mysql -uroot -p123 metrics < init.sql" 
 
 
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e  "SELECT * FROM main_benchmark;"'
+sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e  "SELECT num_of_consumers, AVG(elapsed), std(elapsed), records_size FROM main_benchmark group by num_of_consumers, records_size order by num_of_consumers;"' > exec_time.tsv
 
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e "SELECT * FROM service_benchmark;"'
-   
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e "SELECT * FROM worker_benchmark;"'   
+sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e "SET @t1 := (SELECT AVG(elapsed) FROM main_benchmark group by num_of_consumers, records_size order by num_of_consumers limit 1);
+SELECT num_of_consumers, (@t1 / AVG(elapsed)) AS speedup, (@t1 / AVG(elapsed))/num_of_consumers AS efficiency,records_size FROM main_benchmark group by num_of_consumers, records_size order by num_of_consumers;"' > speedup_efficiency.tsv
+
+
+sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e "SELECT main_benchmark.start_exec , main_benchmark.elapsed FROM main_benchmark INNER JOIN worker_benchmark ON main_benchmark.exportID=worker_benchmark.exportID;"'
+
 
 
 
