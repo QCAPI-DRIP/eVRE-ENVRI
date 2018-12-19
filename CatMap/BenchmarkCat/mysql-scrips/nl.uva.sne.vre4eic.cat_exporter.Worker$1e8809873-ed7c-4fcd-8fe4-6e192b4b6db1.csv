@@ -1,4 +1,0 @@
-start,end,worker_id,source,mapping.name,exportID,records.size,message.count,record.id,rdf.file.size,
-1545080032824,1545080053977,e8809873-ed7c-4fcd-8fe4-6e192b4b6db1,https://ckan-d4s.d4science.org/,Mapping115,ee21380a-4058-4959-afcb-b2f43e28aba5,30,7,87e6f096-e84c-4d55-8409-4eb8b5a69081,15836,
-1545080054207,1545080063384,e8809873-ed7c-4fcd-8fe4-6e192b4b6db1,https://ckan-d4s.d4science.org/,Mapping115,ee21380a-4058-4959-afcb-b2f43e28aba5,30,15,9701ceeb-9d8a-46d9-b1e3-e56ffa4480f5,19006,
-1545080063491,1545080069884,e8809873-ed7c-4fcd-8fe4-6e192b4b6db1,https://ckan-d4s.d4science.org/,Mapping115,ee21380a-4058-4959-afcb-b2f43e28aba5,30,23,5903f8bf-0fb7-4e35-971f-aa324fdd36d4,16622,

@@ -9,22 +9,16 @@ package nl.uva.sne.vre4eic.benchmarkcat;
 //import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
 import java.io.File;
-import java.io.FileOutputStream;
 //import io.micrometer.influx.InfluxConfig;
 //import io.micrometer.influx.InfluxConsistency;
 //import io.micrometer.influx.InfluxMeterRegistry;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.time.Clock;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -39,7 +33,7 @@ public class Main {
     private static final String CAT_BASE_URL = "http://" + HOST + ":8083/catalogue_mapper/";  //"http://" + HOST + ":8083/catalogue_mapper/"; //"http://" + HOST + ":8083/catalogue_mapper/";
     private static final String D4SCIENEC_CKAN = "https://ckan-d4s.d4science.org/";
     private static final String[] MAPPING_115 = new String[]{"https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/Mapping115.x3ml", "https://raw.githubusercontent.com/skoulouzis/eVRECatalogueIntegration/master/etc/CERIF-generator-policy-v5___21-08-2018124405___12069.xml"};
-    private static final int LIMIT = 500;
+    private static final int LIMIT = 1000;
     private static final String QUEUE_NAME = "metadata_records";
     private static final String RABBIT_API_URL = "http://" + HOST + ":15672/api/consumers/%2F";
     private static final String RABBIT_USER = "guest";
@@ -131,7 +125,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         try {
             init();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
 
                 benchmarkConversion(D4SCIENEC_CKAN, MAPPING_115, UUID.randomUUID().toString());
 

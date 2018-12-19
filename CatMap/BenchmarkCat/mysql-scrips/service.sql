@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS service_benchmark (
   uid BINARY(16) PRIMARY KEY,
-  start_exec DATETIME NOT NULL,
-  end_exec DATETIME NOT NULL,
-  elapsed BIGINT NOT NULL,
+  start_exec BIGINT NOT NULL,
+  end_exec BIGINT NOT NULL,
+  elapsed INT NOT NULL,
   cat_source TEXT(5240) NOT NULL,
   mapping_name TEXT(5240)NOT NULL,
   exportID VARCHAR(255), INDEX(exportID),
@@ -24,9 +24,9 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (@start,@end,@cat_source,@mapping_name,@exportID,@records_size)
-SET start_exec = FROM_UNIXTIME(@start/1000), 
-    end_exec = FROM_UNIXTIME(@end/1000),
-    elapsed = ((@end - @start) / 1000),
+SET start_exec = @start, 
+    end_exec = @end,
+    elapsed = ((@end - @start)),
     cat_source=@cat_source,
     mapping_name=@mapping_name,
     exportID=@exportID,

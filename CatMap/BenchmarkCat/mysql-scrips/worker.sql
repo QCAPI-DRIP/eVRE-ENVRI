@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS worker_benchmark (
   uid BINARY(16) PRIMARY KEY,
-  start_exec DATETIME NOT NULL,
-  end_exec DATETIME NOT NULL,
-  elapsed BIGINT NOT NULL,
+  start_exec BIGINT NOT NULL,
+  end_exec BIGINT NOT NULL,
+  elapsed INT NOT NULL,
   worker_id VARCHAR(255), INDEX(worker_id),
   cat_source TEXT(5240) NOT NULL,
   mapping_name TEXT(5240)NOT NULL,
@@ -31,9 +31,9 @@ IGNORE 1 ROWS
 
 
 (@start,@end,@worker_id,@cat_source,@mapping_name,@exportID,@records_size,@message_count,@record_id,@rdf_file_size)
-SET start_exec = FROM_UNIXTIME(@start/1000), 
-    end_exec = FROM_UNIXTIME(@end/1000),
-    elapsed = ((@end - @start) / 1000),
+SET start_exec = @start, 
+    end_exec = @end,
+    elapsed = (@end - @start),
     worker_id = @worker_id,
     cat_source=@cat_source,
     mapping_name=@mapping_name,
