@@ -7,11 +7,6 @@ for f in 'CSV/nl.uva.sne.vre4eic.cat_exporter.Worker$1'*.csv; do
     sed -e 1d $f >> CSV/nl.uva.sne.vre4eic.cat_exporter.Worker.csv
 done
 
-sleep 15
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 -s -N -e "create database metrics;"'
-
-
-
 for f in CSV/*.csv; do
     fileName=$(basename $f)
     sudo docker cp $f $(sudo docker ps | grep mysql | awk '{print $1}'):/tmp/$fileName
@@ -19,18 +14,31 @@ done
 
 for f in *.sql; do
     fileName=$(basename $f)
+    echo $fileName
     sudo docker cp $f $(sudo docker ps | grep mysql | awk '{print $1}'):/$fileName
 done
 
+sleep 10
+sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 -s -N -e "create database metrics;"'
+
+
+
+
+
 sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c "mysql -uroot -p123 metrics < init.sql" 
 
-
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics < exec_time.sql' > CSV/exec_time.tsv
+sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics < execution_time.sql' > CSV/exec_time.tsv
 
 sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics < speedup_efficiency.sql' > CSV/speedup_efficiency.tsv
 
+for i in {1..16}
+do
+    sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c "echo \"SET @consumers =$i;\" > gnatt$i.sql"
+    sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c "cat gantt.sql >>  gnatt$i.sql"
+    sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c "mysql -uroot -p123 --database=metrics < gnatt$i.sql" > CSV/gnatt$i.tsv
+done
 
-sudo docker exec -it $(sudo docker ps | grep mysql | awk '{print $1}') sh -c 'mysql -uroot -p123 --database=metrics -s -N -e "SET @ex_id = 7a6cc96e-91b2-4a16-ab3c-38757d96b44f;"' > CSV/gentt.tsv
+
 
 
 
