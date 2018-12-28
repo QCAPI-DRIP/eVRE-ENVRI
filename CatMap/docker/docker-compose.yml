@@ -9,12 +9,11 @@ services:
                 condition: on-failure     
             placement:
                 constraints: [node.role == manager]
-                
-        #ports:
-            #- "15672:15672"
-            #- "5671:5671"
-            #- "15671:15671"
-            #- "5672:5672"
+        ports:
+            - "15672:15672"
+            - "5671:5671"
+            - "15671:15671"
+            - "5672:5672"
         #deploy:
             #resources:
                 #limits:
