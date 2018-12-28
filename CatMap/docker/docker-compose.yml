@@ -6,12 +6,15 @@ services:
         image: rabbitmq:3-management
         deploy:
             restart_policy:
-                condition: on-failure      
-        ports:
-            - "15672:15672"
-            - "5671:5671"
-            - "15671:15671"
-            - "5672:5672"
+                condition: on-failure     
+            placement:
+                constraints: [node.role == manager]
+                
+        #ports:
+            #- "15672:15672"
+            #- "5671:5671"
+            #- "15671:15671"
+            #- "5672:5672"
         #deploy:
             #resources:
                 #limits:
@@ -28,6 +31,8 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
+            placement:
+                constraints: [node.role == manager]                
         environment:
             RABBIT_HOST: rabbit
             RABBIT_PORT: 5672
@@ -46,6 +51,8 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
+            placement:
+                constraints: [node.role == worker]                
             replicas: 1          
         environment:
             RABBIT_HOST: rabbit
@@ -105,9 +112,11 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
+            placement:
+                constraints: [node.role == manager]                       
         #volumes:
             #- webdav:/var/www     
-        #deploy:
+        
             #resources:
                 #limits:
                     #cpus: '0.3'

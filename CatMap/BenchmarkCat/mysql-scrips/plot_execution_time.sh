@@ -6,7 +6,9 @@ gnuplot -persist <<-EOFMarker
     set ylabel "Execution Time, sec"
     set datafile separator "\t"
     
-    plot "CSV/exec_time.tsv" using 1:2 with linespoints linetype 1, \
-        "" using 1:2:3 with errorbars linetype 1
+    plot "CSV/exec_time-100.tsv" using 1:2 with linespoints linetype 1, \
+        "CSV/exec_time-100.tsv" using 1:2:3 with errorbars linetype 1, \
+    "CSV/exec_time-200.tsv" using 1:2 with linespoints linetype 2, \
+    "CSV/exec_time-200.tsv" using 1:2:3 with errorbars linetype 2
    
 EOFMarker
