@@ -1,6 +1,0 @@
-mysql: [Warning] Using a password on the command line interface can be insecure.			
-num_of_consumers	AVG(elapsed)	std(elapsed)	records_size
-1	41102.4	6110.35293906989	100
-2	41529.2	3127.31376104157	100
-4	44893.6	5811.63899773549	100
-8	49068.4	7355.0744279035	100

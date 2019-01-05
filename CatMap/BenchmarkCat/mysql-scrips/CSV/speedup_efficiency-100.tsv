@@ -1,6 +1,0 @@
-mysql: [Warning] Using a password on the command line interface can be insecure.			
-num_of_consumers	speedup	efficiency	records_size
-1	1	1	100
-2	0.98972289377113	0.494861446885565	100
-4	0.9155514371759	0.228887859293975	100
-8	0.83765519152856	0.10470689894107	100

@@ -50,8 +50,8 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-            placement:
-                constraints: [node.role == worker]                
+            #placement:
+                #constraints: [node.role == worker]                
             replicas: 1          
         environment:
             RABBIT_HOST: rabbit
