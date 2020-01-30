@@ -54,15 +54,15 @@ services:
             - pylog2prov
             
             
-    #pylog2prov:
-        #image: pylog2prov
-        #environment:
-            #RABBIT_HOST: "rabbit"
-            #RABBIT_PORT: "5672"
-            #RABBIT_USERNAME: "guest"
-            #RABBIT_PASSWORD: "guest"
-        #depends_on:
-            #- rabbit               
+    pylog2prov:
+        image: pylog2prov
+        environment:
+            RABBIT_HOST: "rabbit"
+            RABBIT_PORT: "5672"
+            RABBIT_USERNAME: "guest"
+            RABBIT_PASSWORD: "guest"
+        depends_on:
+            - rabbit               
              
     #statistics-cat:
         #image: statistics-cat
