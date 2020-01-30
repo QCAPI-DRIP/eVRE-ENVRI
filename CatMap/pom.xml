@@ -12,7 +12,19 @@
     <module>rest_cat</module>
     <module>cat_worker</module>
     <module>statistics_cat</module>
-    <module>CerifDataHarvester</module>
-    <module>x3ml-1.9.0</module>
   </modules>
+      <repositories>       
+<!--        <repository>
+            <snapshots />
+            <id>skoulouzis-snapshots</id>
+            <url>https://raw.githubusercontent.com/skoulouzis/mvn-repo/master/snapshots</url>
+        </repository>-->
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>releases</id>
+            <url>https://raw.githubusercontent.com/skoulouzis/mvn-repo/master/releases</url>
+        </repository>
+    </repositories> 
 </project>
