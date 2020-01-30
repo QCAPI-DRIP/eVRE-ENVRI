@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:     
+    influx:
+        image: influxdb
+        environment:
+            INFLUXDB_DB: mydb
+        volumes:
+            - influx:/var/lib/influxdb      
+        ports:
+            - "8086:8086"
+        deploy:
+            replicas: 1             
+            
+    cadvisor:
+        image: google/cadvisor
+        ports:
+            - "8081:8080"
+        hostname: '{{.Node.ID}}'
+        command: -logtostderr -docker_only -storage_driver=influxdb -storage_driver_db=mydb -storage_driver_host=influx:8086
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        depends_on:
+            - influx
+        deploy:
+            mode: global                
+            
+    grafana:
+        image: grafana/grafana
+        environment:
+            DS_NAME: "InfluxDB"
+            DS_TYPE: "InfluxDB"
+            DS_ACCESS: "proxy"
+            DS_URL: "http://influx:8086"
+            DS_DB: "mydb"
+        ports:
+            - "3000:3000"
+        volumes:
+            - grafana:/var/lib/grafana
+        depends_on:
+            - influx
+        deploy:
+            replicas: 1 
+            
+    service:
+        image: eliaskhaldi/my_image
+        ports:
+            - "8080:8080"
+        deploy:
+            replicas: 1             
+    
+
+
+volumes:
+  influx:
+  grafana:

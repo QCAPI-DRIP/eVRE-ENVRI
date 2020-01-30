@@ -1,277 +1,258 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Metadata Recorder Creator</title>
-        <link rel="icon" href="https://www.envriplus.eu/wp-content/uploads/2017/10/Untitled-300x294.png">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
-        <script src="progress.js"></script> 
-        <script src="upload.js"></script> 
-        <!--<script src="http://wzrd.in/standalone/uuid%2Fv4@latest"></script>-->
-        <script src="cerif-prov.js"></script>
 
-        <style>
-            #myProgress {
-                width: 100%;
-                background-color: #ddd;
-            }
+<head>
+    <title>Metadata Recorder Creator</title>
+    <link rel="icon" href="https://www.envriplus.eu/wp-content/uploads/2017/10/Untitled-300x294.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" src="dygraph.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script type="text/javascript" src="dygraph.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
+    <script src="upload.js"></script>
+    <script src="visualize.js"></script>
+    <script src="getData.js"></script>
+    <script src="cerif-prov.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Lato", sans-serif
+        }
 
-            #myBar {
-                width: 0%;
-                height: 30px;
-                background-color: #4CAF50;
-                text-align: center;
-                line-height: 30px;
-                color: white;
-            }
-        </style>
+        .w3-bar,
+        h1,
+        button {
+            font-family: "Montserrat", sans-serif
+        }
 
-        <style>
-            .footer {
-                position: fixed;
-                left: 0;
-                bottom: 0;
-                width: 100%;
-                text-align: center;
-            }
-        </style>
+        .fa-anchor,
+        .fa-coffee {
+            font-size: 200px
+        }
+    </style>
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+        }
 
-        <style>
-            /* Center the loader */
-            #loader {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                z-index: 1;
-                width: 150px;
-                height: 150px;
-                margin: -75px 0 0 -75px;
-                border: 16px solid #f3f3f3;
-                border-radius: 50%;
-                border-top: 16px solid #3498db;
-                width: 60px;
-                height: 60px;
-                -webkit-animation: spin 2s linear infinite;
-                animation: spin 2s linear infinite;
-            }
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
 
-            @-webkit-keyframes spin {
-                0% { -webkit-transform: rotate(0deg); }
-                100% { -webkit-transform: rotate(360deg); }
-            }
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
 
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
 
-            /* Add animation to "page content" */
-            .animate-bottom {
-                position: relative;
-                -webkit-animation-name: animatebottom;
-                -webkit-animation-duration: 1s;
-                animation-name: animatebottom;
-                animation-duration: 1s
-            }
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
 
-            @-webkit-keyframes animatebottom {
-                from { bottom:-100px; opacity:0 } 
-                to { bottom:0px; opacity:1 }
-            }
-
-            @keyframes animatebottom { 
-                from{ bottom:-100px; opacity:0 } 
-                to{ bottom:0; opacity:1 }
-            }
-
-            #myDiv {
-                display: none;
-                text-align: center;
-            }
-        </style>
-
-
-        <style>
-            body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-            .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-            .fa-anchor,.fa-coffee {font-size:200px}
-        </style>
-        <style>
-            body {
-                font-family: "Lato", sans-serif;
-            }
-
+        @media screen and (max-height: 450px) {
             .sidenav {
-                height: 100%;
-                width: 0;
-                position: fixed;
-                z-index: 1;
-                top: 0;
-                left: 0;
-                background-color: #111;
-                overflow-x: hidden;
-                transition: 0.5s;
-                padding-top: 60px;
+                padding-top: 15px;
             }
 
             .sidenav a {
-                padding: 8px 8px 8px 32px;
-                text-decoration: none;
-                font-size: 25px;
-                color: #818181;
-                display: block;
-                transition: 0.3s;
+                font-size: 18px;
             }
+        }
+    </style>
+    <style>
+        #source {
+            resize: none;
+            spellcheck: false;
+        }
 
-            .sidenav a:hover {
-                color: #f1f1f1;
-            }
+        #target {
+            resize: none;
+            spellcheck: false;
+            font-family: monospace;
+        }
+    </style>
 
-            .sidenav .closebtn {
-                position: absolute;
-                top: 0;
-                right: 25px;
-                font-size: 36px;
-                margin-left: 50px;
-            }
+</head>
 
-            @media screen and (max-height: 450px) {
-                .sidenav {padding-top: 15px;}
-                .sidenav a {font-size: 18px;}
-            }
-        </style>
-        <style>
-
-            #source {
-                resize: none;
-                spellcheck: false;
-            }
-
-            #target {
-                resize: none;
-                spellcheck: false;
-                font-family: monospace;
-            }
-
-        </style>
-
-    </head>
-    <body style="margin:0;">
+<body style="margin:0;">
 
 
-        <!-- Header -->
-        <header class="w3-container w3-gray w3-center" style="padding:2px 1px">
+    <!-- Header -->
+    <header class="w3-container w3-gray w3-center" style="padding:2px 1px">
 
 
-            <h1 class="w3-margin w3-large">Metadata Recorder Creator</h1>
-            <img src="https://teaching.science.uva.nl/wp-content/uploads/2017/12/uva-logo.png" alt="HTML5 Icon" width="70" height="75" >
-            <img src="https://www.envriplus.eu/wp-content/uploads/2015/08/ENVRI-plus_m.png" alt="HTML5 Icon" width="95" height="70" hspace="100">
-            <img src="https://www.envriplus.eu/wp-content/uploads/2017/10/Untitled-300x294.png" alt="HTML5 Icon" width="80" height="80">
+        <h1 class="w3-margin w3-large">Context Gathering tool</h1>
+        <img src="https://teaching.science.uva.nl/wp-content/uploads/2017/12/uva-logo.png" alt="HTML5 Icon" width="70"
+            height="75">
+        <img src="https://www.envriplus.eu/wp-content/uploads/2015/08/ENVRI-plus_m.png" alt="HTML5 Icon" width="95"
+            height="70" hspace="100">
+        <img src="https://www.envriplus.eu/wp-content/uploads/2017/10/Untitled-300x294.png" alt="HTML5 Icon" width="80"
+            height="80">
 
-        </header>
-        <div id="mySidenav" align="center" class="sidenav w3-padding-32">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <br>
-            <br>
-            <br>
-        </div>
+    </header>
+    <div id="mySidenav" align="center" class="sidenav w3-padding-32">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <br>
+        <br>
+        <br>
+    </div>
 
 
-        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; configure</span>
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; configure</span>
 
-        <script>
-            function openNav() {
-                document.getElementById("mySidenav").style.width = "250px";
-            }
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
 
-            function closeNav() {
-                document.getElementById("mySidenav").style.width = "0";
-            }
-        </script>     
-        <div id="demo" class="w3-white w3-container ">
-            <div class="w3-content">
-                <div class="w3-twothird">
-                    <h3>Load Files</h3>
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
 
-                    <input type="file" id="provUpload" class="w3-input" multiple size="50" accept=".xml, .ttl">
-                    <label for="provUpload">Upload Workflow PROV</label>
+    </script>
 
-                    <input type="file" id="serviceLogUpload" class="w3-input" multiple size="50" accept=".t2flow">
-                    <label for="serviceLogUpload">Upload Workflow</label>
+    <div id="demo" class="w3-white w3-container ">
+        <div class="w3-content">
+            <div class="w3-twothird">
+                <h3>Load Files</h3>
 
-                    <input type="file" id="sysLogUpload" class="w3-input" multiple size="50" accept=".log, .txt">
-                    <label for="sysLogUpload">Upload Workflow logs</label>
+                <label for="serviceLogUpload">Upload Workflow</label>
+                <input type="file" id="serviceLogUpload" class="w3-input" multiple size="50" accept=".t2flow">
 
-                    <br>
-                    <button id="uploadBtn" class="w3-button w3-black w3-padding-large w3-large 
-                            w3-margin-top btn btn-success" onclick="uploadAll()">Generate Context</button>
-                    <br>
-                    <br>
-                    <div class="w3-light-grey">
-                        <div id="bar1" class="w3-container w3-gray" style="height:10px;width:0%">
-                        </div>
-                    </div>
-                    <p id="myP1">Workflow Context <span id="demo1">0</span> of </p>
+                <label for="provUpload">Upload PROV</label>
+                <input type="file" id="provUpload" class="w3-input" multiple size="50" accept=".xml, .ttl">
 
-                    <div class="w3-light-grey">
-                        <div id="bar2" class="w3-container w3-gray" style="height:10px;width:0%">
-                        </div>
-                    </div>
-                    <p id="myP2">System Context <span id="demo2">0</span> of </p>
-                    <div class="w3-light-grey">
-                        <div id="bar3" class="w3-container w3-gray" style="height:10px;width:0%">
-                        </div>
-                    </div>
-                    <p id="myP3">Service Context <span id="demo3">0</span> of </p>
-                </div>
+                <br>
+                <button id="uploadBtn" class="w3-button w3-black w3-padding-large w3-large
+                            w3-margin-top btn btn-success" onclick="uploadAll()">Parse input
+                </button>
+                <br>
             </div>
         </div>
+    </div>
 
-        <section class="w3-row">
 
-            <div class="w3-half w3-panel">
+    <div id="demo_output" class="w3-white w3-container" style="display: none;">
+        <div class="w3-content">
+            <br>
+            <br>
+            <table id="output_table" class="w3-table">
+                <caption>Output</caption>
+                <tr>
+                    <td><input type="checkbox" onclick="checkAll(this.checked)"></td>
+                    <td>Name</td>
+                    <td>Endpoint</td>
+                    <td>Method</td>
+                    <td>Start-time</td>
+                    <td>End-time</td>
+                </tr>
+            </table>
 
-                <textarea id="source" class="w3-input w3-border" rows="25">
+            <button id="dataBtn" class="w3-button w3-black w3-padding-large w3-large
+                            w3-margin-top btn btn-success" onclick="getData()">Visualize data
+            </button>
+            <br>
+        </div>
+    </div>
 
-                </textarea>
+    <div id="plot_div" class="w3-white w3-container" style="display: none;">
+        <div class="w3-content">
+            <br>
+            <br>
+            <label>Timeline</label>
+            <div id="timeline" style="width:100%"></div>
 
-                <div class="w3-panel w3-center">
-
-                    <button class="w3-button w3-black w3-padding-large w3-large 
-                            w3-margin-top btn btn-success" onclick="writeCERIFProv(document.getElementById('source').value, 'target')">submit</button>
-
-                </div>
-                <div id="loader"  style="display: none"> </div>
+            <label>CPU</label>
+            <div id="plot_cpu" style="width:100%"></div>
+            <br>
+            <div class="w3-row">
+                <input type="checkbox" id="chk_highlight_cpu"  onclick="highlight('cpu')">
+                <label for="serviceLogUpload">Highlight Steps </label>
             </div>
 
-            <div class="w3-half w3-panel">
-
-                <textarea id="target" class="w3-input w3-border" rows="25">
-                </textarea>
-
+            <br>
+            <label>Memory</label>
+            <div id="plot_mem" style="width:100%"></div>
+            <br>
+            <div class="w3-row">
+                <input type="checkbox" id="chk_highlight_mem"  onclick="highlight('mem')">
+                <label for="serviceLogUpload">Highlight Steps </label>
             </div>
 
-        </section>
-
-        <!-- Footer -->
-        <footer class="w3-container w3-padding-64 w3-center">  
-            <div class="w3-xlarge w3-padding-32 w3-black">
-                <small>
-                    &copy; Copyright 2018, University of Amsterdam
-                </small>
-
-                <i class="fa fa-email w3-hover-opacity"></i>
+            <br>
+            <label>Network (in)</label>
+            <div id="plot_net_in" style="width:100%"></div>
+            <br>
+            <div class="w3-row">
+                <input type="checkbox" id="chk_highlight_net_in"  onclick="highlight('net_in')">
+                <label for="serviceLogUpload">Highlight Steps </label>
             </div>
-        </footer>
-    </body>
 
-    <script src="table.js " type="text/javascript"></script>
+            <br>
+            <label>Network (out)</label>
+            <div id="plot_net_out" style="width:100%"></div>
+            <br>
+            <div class="w3-row">
+                <input type="checkbox" id="chk_highlight_net_out"  onclick="highlight('net_out')">
+                <label for="serviceLogUpload">Highlight Steps </label>
+            </div>
+        </div>
+    </div>
+
+    <footer class="w3-container w3-padding-64 w3-center">
+        <div class="w3-xlarge w3-padding-32 w3-black">
+            <small>
+                &copy; Copyright 2018, University of Amsterdam
+            </small>
+
+            <i class="fa fa-email w3-hover-opacity"></i>
+        </div>
+    </footer>
+</body>
+
+<script src="table.js " type="text/javascript"></script>
+
 </html>

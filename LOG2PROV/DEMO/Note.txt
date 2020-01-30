@@ -1,0 +1,5 @@
+db_connector component:
+https://github.com/QCAPI-DRIP/eVRE-ENVRI/tree/elias_branch/LOG2PROV/dbconnector
+
+user_gui component:
+https://github.com/QCAPI-DRIP/eVRE-ENVRI/tree/elias_branch/LOG2PROV/PRovenanceIntegratorSErvice

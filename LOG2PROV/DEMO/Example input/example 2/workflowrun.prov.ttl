@@ -1,0 +1,441 @@
+@prefix dc:  <http://purl.org/dc/elements/1.1/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix cnt:  <http://www.w3.org/2011/content#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix dcmitype:  <http://purl.org/dc/dcmitype/> .
+@prefix wfprov:  <http://purl.org/wf4ever/wfprov#> .
+@prefix dcam:  <http://purl.org/dc/dcam/> .
+@prefix xml:  <http://www.w3.org/XML/1998/namespace> .
+@prefix vs:  <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix wot:  <http://xmlns.com/wot/0.1/> .
+@prefix wfdesc:  <http://purl.org/wf4ever/wfdesc#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix tavernaprov:  <http://ns.taverna.org.uk/2012/tavernaprov/> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix scufl2:  <http://ns.taverna.org.uk/2010/scufl2#> .
+
+<http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7>
+        tavernaprov:content          <intermediates/04/04dc51d0-f353-4b94-8785-052b1c4848a7.png> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/in/inputBody> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/in/inputBody> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/out/responseBody> ;
+        wfprov:wasOutputFrom         <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5367e902-7079-42e9-b5c4-e73c8b80f6fa/> ;
+        prov:qualifiedGeneration     _:b0 ;
+        prov:wasGeneratedBy          <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5367e902-7079-42e9-b5c4-e73c8b80f6fa/> ;
+        rdf:type                     wfprov:Artifact ;
+        rdf:type                     prov:Entity .
+
+_:b1    prov:hadRole  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/in/inputBody> ;
+        prov:entity   <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/e4368aa1-0238-4a80-b62a-093f191f9834> ;
+        rdf:type      prov:Usage .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5367e902-7079-42e9-b5c4-e73c8b80f6fa/>
+        rdfs:label                   "Processor execution cpu2"@en ;
+        wfprov:wasEnactedBy          <#taverna-engine> ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:endedAtTime             "2019-03-29T21:45:49.775+01:00"^^xsd:dateTime ;
+        prov:qualifiedAssociation    _:b2 ;
+        prov:qualifiedUsage          _:b1 ;
+        wfprov:usedInput             <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/e4368aa1-0238-4a80-b62a-093f191f9834> ;
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/> ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        rdf:type                     wfprov:ProcessRun ;
+        prov:qualifiedStart          _:b3 ;
+        prov:startedAtTime           "2019-03-29T21:45:28.666+01:00"^^xsd:dateTime ;
+        prov:used                    <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/e4368aa1-0238-4a80-b62a-093f191f9834> ;
+        prov:qualifiedEnd            _:b4 .
+
+_:b5    prov:atTime  "2019-03-29T21:45:49.811+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/>
+        rdfs:label  "Processor mem1"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+_:b6    prov:atTime  "2019-03-29T21:45:05.614+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/6f34a518-1d55-4355-b08a-8b5f5da0ab2f/>
+        prov:endedAtTime             "2019-03-29T21:45:05.801+01:00"^^xsd:dateTime ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        wfprov:wasEnactedBy          <#taverna-engine> ;
+        rdf:type                     wfprov:ProcessRun ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        prov:qualifiedEnd            _:b7 ;
+        prov:startedAtTime           "2019-03-29T21:45:05.614+01:00"^^xsd:dateTime ;
+        rdfs:label                   "Processor execution GETIMAGE"@en ;
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/> ;
+        prov:qualifiedStart          _:b6 ;
+        prov:qualifiedAssociation    _:b8 .
+
+<intermediates/04/04dc51d0-f353-4b94-8785-052b1c4848a7.png>
+        tavernaprov:byteCount  "4013"^^xsd:long ;
+        tavernaprov:sha512     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"^^xsd:string ;
+        tavernaprov:sha1       "9cd12aa52f0715a8051969859c7d375c785cf3c3"^^xsd:string ;
+        rdf:type               tavernaprov:Content .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/in/inputBody>
+        rdfs:comment  "cpu2 input inputBody"@en ;
+        rdfs:label    "inputBody" ;
+        rdf:type      wfdesc:Input ;
+        rdf:type      prov:Role .
+
+_:b9    prov:hadPlan  <http://ns.taverna.org.uk/2011/software/taverna-core-2.5.0> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+<>      foaf:primaryTopic         <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:qualifiedGeneration  _:b10 ;
+        prov:wasGeneratedBy       <#taverna-prov-export> ;
+        rdf:type                  prov:Bundle .
+
+_:b11   prov:hadRole  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/in/inputBody> ;
+        prov:entity   <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/d0d17fcd-040e-4fd3-8cb5-facc805788e5> ;
+        rdf:type      prov:Usage .
+
+_:b12   prov:hadRole  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/in/inputBody> ;
+        prov:entity   <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/593349c6-ab04-4def-b894-15c08a4bb169> ;
+        rdf:type      prov:Usage .
+
+<intermediates/d0/d0d17fcd-040e-4fd3-8cb5-facc805788e5.png>
+        tavernaprov:byteCount  "4012"^^xsd:long ;
+        tavernaprov:sha512     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"^^xsd:string ;
+        tavernaprov:sha1       "328dfc413754dde392bfc7f5a213996404ba431e"^^xsd:string ;
+        rdf:type               tavernaprov:Content .
+
+_:b0    prov:hadRole   <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/out/responseBody> ;
+        prov:activity  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5367e902-7079-42e9-b5c4-e73c8b80f6fa/> ;
+        rdf:type       prov:Generation .
+
+_:b13   prov:atTime  "2019-03-29T21:46:15.851+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+<intermediates/e4/e4368aa1-0238-4a80-b62a-093f191f9834.png>
+        tavernaprov:byteCount  "4018"^^xsd:long ;
+        tavernaprov:sha512     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"^^xsd:string ;
+        tavernaprov:sha1       "aa4fb2986aef6411a6ee94ae8d03dfa7d29d9d3d"^^xsd:string ;
+        rdf:type               tavernaprov:Content .
+
+_:b7    prov:atTime  "2019-03-29T21:45:05.801+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+_:b10   prov:activity  <#taverna-prov-export> ;
+        rdf:type       prov:Generation .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/in/inputBody>
+        rdfs:comment  "cpu1 input inputBody"@en ;
+        rdfs:label    "inputBody" ;
+        rdf:type      wfdesc:Input ;
+        rdf:type      prov:Role .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/in/inputBody>
+        rdfs:comment  "mem2 input inputBody"@en ;
+        rdfs:label    "inputBody" ;
+        rdf:type      wfdesc:Input ;
+        rdf:type      prov:Role .
+
+_:b14   prov:atTime  "2019-03-29T20:46:49.75Z"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/>
+        rdfs:label  "Processor cpu2"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+_:b15   prov:hadRole   <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/out/responseBody> ;
+        prov:activity  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/97f1d276-b119-4c81-a574-04982c05a4f4/> ;
+        rdf:type       prov:Generation .
+
+_:b16   prov:atTime  "2019-03-29T21:45:49.791+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+_:b17   prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+_:b8    prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/97f1d276-b119-4c81-a574-04982c05a4f4/>
+        prov:startedAtTime           "2019-03-29T21:45:05.819+01:00"^^xsd:dateTime ;
+        prov:qualifiedStart          _:b18 ;
+        prov:qualifiedUsage          _:b12 ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        rdfs:label                   "Processor execution cpu1"@en ;
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/> ;
+        rdf:type                     wfprov:ProcessRun ;
+        prov:used                    <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/593349c6-ab04-4def-b894-15c08a4bb169> ;
+        prov:qualifiedEnd            _:b19 ;
+        prov:endedAtTime             "2019-03-29T21:45:28.648+01:00"^^xsd:dateTime ;
+        wfprov:wasEnactedBy          <#taverna-engine> ;
+        prov:qualifiedAssociation    _:b20 ;
+        wfprov:usedInput             <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/593349c6-ab04-4def-b894-15c08a4bb169> .
+
+_:b21   prov:hadRole  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/in/inputBody> ;
+        prov:entity   <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        rdf:type      prov:Usage .
+
+_:b22   prov:activity  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        rdf:type       prov:Communication .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/out/responseBody>
+        rdfs:comment  "GETIMAGE output responseBody"@en ;
+        rdfs:label    "responseBody" ;
+        rdf:type      wfdesc:Output ;
+        rdf:type      prov:Role .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/out/responseBody>
+        rdfs:comment  "cpu3 output responseBody"@en ;
+        rdfs:label    "responseBody" ;
+        rdf:type      wfdesc:Output ;
+        rdf:type      prov:Role .
+
+<#taverna-prov-export>
+        prov:startedAtTime           "2019-03-29T20:46:49.581Z"^^xsd:dateTime ;
+        prov:endedAtTime             "2019-03-29T20:46:49.75Z"^^xsd:dateTime ;
+        prov:wasInformedBy           <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        rdfs:label                   "taverna-prov export of workflow run provenance"@en ;
+        prov:qualifiedStart          _:b23 ;
+        prov:qualifiedAssociation    _:b9 ;
+        prov:qualifiedEnd            _:b14 ;
+        prov:qualifiedCommunication  _:b22 ;
+        rdf:type                     prov:Activity .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/out/responseBody>
+        rdfs:comment  "cpu1 output responseBody"@en ;
+        rdfs:label    "responseBody" ;
+        rdf:type      wfdesc:Output ;
+        rdf:type      prov:Role .
+
+<intermediates/59/593349c6-ab04-4def-b894-15c08a4bb169.png>
+        tavernaprov:byteCount  "2376"^^xsd:long ;
+        tavernaprov:sha512     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"^^xsd:string ;
+        tavernaprov:sha1       "3e01e454c11499d3eb45fa570bc0e5be83550743"^^xsd:string ;
+        rdf:type               tavernaprov:Content .
+
+_:b3    prov:atTime  "2019-03-29T21:45:28.666+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/in/inputBody>
+        rdfs:comment  "mem1 input inputBody"@en ;
+        rdfs:label    "inputBody" ;
+        rdf:type      wfdesc:Input ;
+        rdf:type      prov:Role .
+
+_:b24   prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+<#taverna-engine>  rdf:type  tavernaprov:TavernaEngine .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/ef2ffa98-6714-4131-8134-c381da75f554/>
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/> ;
+        prov:used                    <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/d0d17fcd-040e-4fd3-8cb5-facc805788e5> ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:qualifiedAssociation    _:b25 ;
+        prov:endedAtTime             "2019-03-29T21:46:36.178+01:00"^^xsd:dateTime ;
+        rdf:type                     wfprov:ProcessRun ;
+        wfprov:wasEnactedBy          <#taverna-engine> ;
+        prov:qualifiedUsage          _:b11 ;
+        rdfs:label                   "Processor execution mem2"@en ;
+        wfprov:usedInput             <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/d0d17fcd-040e-4fd3-8cb5-facc805788e5> ;
+        prov:qualifiedStart          _:b26 ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        prov:startedAtTime           "2019-03-29T21:46:11.605+01:00"^^xsd:dateTime ;
+        prov:qualifiedEnd            _:b27 .
+
+_:b28   prov:atTime  "2019-03-29T21:46:11.591+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+<http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/d0d17fcd-040e-4fd3-8cb5-facc805788e5>
+        tavernaprov:content          <intermediates/d0/d0d17fcd-040e-4fd3-8cb5-facc805788e5.png> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/in/inputBody> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/out/responseBody> ;
+        wfprov:wasOutputFrom         <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5ba7ec65-4e1c-4bbf-9dda-04bbcd0cee1b/> ;
+        prov:qualifiedGeneration     _:b29 ;
+        prov:wasGeneratedBy          <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5ba7ec65-4e1c-4bbf-9dda-04bbcd0cee1b/> ;
+        rdf:type                     wfprov:Artifact ;
+        rdf:type                     prov:Entity .
+
+<http://ns.taverna.org.uk/2011/software/taverna-core-2.5.0>
+        rdfs:label  "Taverna Workbench Core 2.5.0"@en ;
+        rdf:type    prov:Plan .
+
+<http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/e4368aa1-0238-4a80-b62a-093f191f9834>
+        tavernaprov:content          <intermediates/e4/e4368aa1-0238-4a80-b62a-093f191f9834.png> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/in/inputBody> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/out/responseBody> ;
+        wfprov:wasOutputFrom         <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/97f1d276-b119-4c81-a574-04982c05a4f4/> ;
+        prov:qualifiedGeneration     _:b15 ;
+        prov:wasGeneratedBy          <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/97f1d276-b119-4c81-a574-04982c05a4f4/> ;
+        rdf:type                     wfprov:Artifact ;
+        rdf:type                     prov:Entity .
+
+_:b30   prov:hadRole   <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/out/responseBody> ;
+        prov:activity  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/6f34a518-1d55-4355-b08a-8b5f5da0ab2f/> ;
+        rdf:type       prov:Generation .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/>
+        rdfs:label  "Processor mem2"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+_:b26   prov:atTime  "2019-03-29T21:46:11.605+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+_:b31   prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5ba7ec65-4e1c-4bbf-9dda-04bbcd0cee1b/>
+        prov:used                    <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:qualifiedStart          _:b16 ;
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/> ;
+        rdf:type                     wfprov:ProcessRun ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        prov:startedAtTime           "2019-03-29T21:45:49.791+01:00"^^xsd:dateTime ;
+        prov:qualifiedUsage          _:b32 ;
+        wfprov:usedInput             <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        rdfs:label                   "Processor execution cpu3"@en ;
+        prov:qualifiedEnd            _:b28 ;
+        prov:endedAtTime             "2019-03-29T21:46:11.591+01:00"^^xsd:dateTime ;
+        wfprov:wasEnactedBy          <#taverna-engine> ;
+        prov:qualifiedAssociation    _:b24 .
+
+_:b4    prov:atTime  "2019-03-29T21:45:49.775+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+_:b32   prov:hadRole  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/in/inputBody> ;
+        prov:entity   <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        rdf:type      prov:Usage .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/>
+        wfprov:describedByWorkflow  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/> ;
+        prov:endedAtTime            "2019-03-29T21:46:36.183+01:00"^^xsd:dateTime ;
+        wfprov:wasEnactedBy         <#taverna-engine> ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5ba7ec65-4e1c-4bbf-9dda-04bbcd0cee1b/> ;
+        prov:startedAtTime          "2019-03-29T21:45:05.409+01:00"^^xsd:dateTime ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/6f34a518-1d55-4355-b08a-8b5f5da0ab2f/> ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/ef2ffa98-6714-4131-8134-c381da75f554/> ;
+        prov:qualifiedAssociation   _:b31 ;
+        rdf:type                    wfprov:WorkflowRun ;
+        prov:qualifiedEnd           _:b33 ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5367e902-7079-42e9-b5c4-e73c8b80f6fa/> ;
+        prov:wasAssociatedWith      <#taverna-engine> ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/3f03e598-29bd-400a-ab2a-2d2852f8502c/> ;
+        prov:qualifiedStart         _:b34 ;
+        rdfs:label                  "Workflow run of Workflow1"@en ;
+        dct:hasPart                 <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/97f1d276-b119-4c81-a574-04982c05a4f4/> .
+
+_:b18   prov:atTime  "2019-03-29T21:45:05.819+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/>
+        rdfs:label  "Processor cpu1"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+_:b27   prov:atTime  "2019-03-29T21:46:36.178+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+<http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/3f03e598-29bd-400a-ab2a-2d2852f8502c/>
+        prov:qualifiedAssociation    _:b17 ;
+        rdfs:label                   "Processor execution mem1"@en ;
+        prov:qualifiedEnd            _:b13 ;
+        prov:qualifiedStart          _:b5 ;
+        rdf:type                     wfprov:ProcessRun ;
+        wfprov:describedByProcess    <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/> ;
+        prov:wasAssociatedWith       <#taverna-engine> ;
+        prov:used                    <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        wfprov:usedInput             <http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/04dc51d0-f353-4b94-8785-052b1c4848a7> ;
+        prov:endedAtTime             "2019-03-29T21:46:15.851+01:00"^^xsd:dateTime ;
+        prov:qualifiedUsage          _:b21 ;
+        wfprov:wasPartOfWorkflowRun  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/> ;
+        prov:startedAtTime           "2019-03-29T21:45:49.811+01:00"^^xsd:dateTime ;
+        wfprov:wasEnactedBy          <#taverna-engine> .
+
+_:b34   prov:atTime  "2019-03-29T21:45:05.409+01:00"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+_:b2    prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/>
+        rdfs:label  "Processor cpu3"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/out/responseBody>
+        rdfs:comment  "cpu2 output responseBody"@en ;
+        rdfs:label    "responseBody" ;
+        rdf:type      wfdesc:Output ;
+        rdf:type      prov:Role .
+
+_:b29   prov:hadRole   <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/out/responseBody> ;
+        prov:activity  <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/5ba7ec65-4e1c-4bbf-9dda-04bbcd0cee1b/> ;
+        rdf:type       prov:Generation .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/in/inputBody>
+        rdfs:comment  "cpu3 input inputBody"@en ;
+        rdfs:label    "inputBody" ;
+        rdf:type      wfdesc:Input ;
+        rdf:type      prov:Role .
+
+_:b23   prov:atTime  "2019-03-29T20:46:49.581Z"^^xsd:dateTime ;
+        rdf:type     prov:Start .
+
+<http://ns.taverna.org.uk/2011/data/649e7d99-9f86-4463-8209-be2c65e96783/ref/593349c6-ab04-4def-b894-15c08a4bb169>
+        tavernaprov:content          <intermediates/59/593349c6-ab04-4def-b894-15c08a4bb169.png> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/in/inputBody> ;
+        wfprov:describedByParameter  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/out/responseBody> ;
+        wfprov:wasOutputFrom         <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/6f34a518-1d55-4355-b08a-8b5f5da0ab2f/> ;
+        prov:qualifiedGeneration     _:b30 ;
+        prov:wasGeneratedBy          <http://ns.taverna.org.uk/2011/run/649e7d99-9f86-4463-8209-be2c65e96783/process/6f34a518-1d55-4355-b08a-8b5f5da0ab2f/> ;
+        rdf:type                     wfprov:Artifact ;
+        rdf:type                     prov:Entity .
+
+_:b19   prov:atTime  "2019-03-29T21:45:28.648+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/>
+        rdfs:label  "Processor GETIMAGE"@en ;
+        rdf:type    wfdesc:Process ;
+        rdf:type    prov:Plan .
+
+<http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/>
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/> ;
+        rdf:type              wfdesc:Workflow ;
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/> ;
+        rdf:type              prov:Plan ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/> ;
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/> ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/> ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/> ;
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/> ;
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu2/> ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/GETIMAGE/> ;
+        wfdesc:hasSubProcess  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/> ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem1/> ;
+        dct:hasPart           <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu3/> .
+
+_:b25   prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/mem2/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
+
+_:b33   prov:atTime  "2019-03-29T21:46:36.183+01:00"^^xsd:dateTime ;
+        rdf:type     prov:End .
+
+_:b20   prov:hadPlan  <http://ns.taverna.org.uk/2010/workflowBundle/da61a40f-e726-4ace-896f-69d4d7997ed8/workflow/Workflow1/processor/cpu1/> ;
+        prov:agent    <#taverna-engine> ;
+        rdf:type      prov:Association .
