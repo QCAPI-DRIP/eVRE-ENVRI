@@ -52,7 +52,7 @@ services:
             URI_PREFIX: "http://vreportal"
             PORTAL_STATE: "public"
         ports:
-            - "8099:8080"
+            - "30003:8080"
         depends_on:
             - metadata
             
@@ -70,40 +70,40 @@ services:
             WORKFLOWS_GRAPH: "http://vre/workflows"
             WORKFLOWS_GRAPH_LABEL: "Workflows"
             NODELINK_URL: "v4e-lab.isti.cnr.it:2181"
-            NODELINK_ENDPOINT: "http://v4e-lab.isti.cnr.it:8080/NodeService"
-            #NODELINK_ENDPOINT: "http://node_service:8080/NodeService"
+            #NODELINK_ENDPOINT: "http://v4e-lab.isti.cnr.it:8080/NodeService"
+            NODELINK_ENDPOINT: "http://node_service:8080/NodeService"
         #ports:
             #- "8090:8080"
         depends_on:
             - virtuoso
 
 
-    #node_service:
-        #image: node_service
-        #environment:
-            #EVRE_SETTINGS_VERSION: "0.3"
-            #EVRE_SETTINGS_AUTHENTICATION_TOKEN_TIMEOUT: "60"
-            #EVRE_SETTINGS_AUTHENTICATION_CODE_TIMEOUT: "60"
-            #EVRE_SERVICES_MESSAGE_BROKER: "tcp://activemq:61616"
-            #EVRE_SERVICES_PROFILE_STORAGE_URL: "mongo"
-            #EVRE_SERVICES_PROFILE_STORAGE_PORT: "27017"
-            #ADMIN_USER: "administrator@fakeemail.com"
-            #ADMIN_PASSWORD: "johnjohn78"
-            #VERSION: "0.0.3"
-            #LICENSE_TYPE: "TBD"
-            #LICENSE_URL: "licensedoc"
-            #NOTIFICATION_API_KEY: "aaaaaaaaaaaaa"
-            #ZOOKEEPER_DEFAULT: "zookeeper:2281"
-            #TOKEN_SECRET_DEFAULT: "fvsecret"
-            #AAAI_LOGIN_DEFAULT: "admin"
-            #AAAI_PWD_DEFAULT: "admin"
-            #AAAI_LOGIN: "admin"
-        #ports:
-            #- "8081:8080"           
+    node_service:
+        image: node_service
+        environment:
+            EVRE_SETTINGS_VERSION: "0.3"
+            EVRE_SETTINGS_AUTHENTICATION_TOKEN_TIMEOUT: "60"
+            EVRE_SETTINGS_AUTHENTICATION_CODE_TIMEOUT: "60"
+            EVRE_SERVICES_MESSAGE_BROKER: "tcp://activemq:61616"
+            EVRE_SERVICES_PROFILE_STORAGE_URL: "mongo"
+            EVRE_SERVICES_PROFILE_STORAGE_PORT: "27017"
+            ADMIN_USER: "administrator@fakeemail.com"
+            ADMIN_PASSWORD: "johnjohn78"
+            VERSION: "0.0.3"
+            LICENSE_TYPE: "TBD"
+            LICENSE_URL: "licensedoc"
+            NOTIFICATION_API_KEY: "aaaaaaaaaaaaa"
+            ZOOKEEPER_DEFAULT: "zookeeper:2281"
+            TOKEN_SECRET_DEFAULT: "fvsecret"
+            AAAI_LOGIN_DEFAULT: "admin"
+            AAAI_PWD_DEFAULT: "admin"
+            AAAI_LOGIN: "admin"
+        ports:
+            - "8081:8080"           
             
     
 
-volumes:
+#volumes:
   #virtuoso-data:
-  h2-data:
+  #h2-data:
   #mongo-data:

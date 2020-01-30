@@ -3,7 +3,7 @@ version: '3.1'
 services:     
                                 
     rest-cat:
-        image: rest-cat
+        image: alogo53/rest-cat
         deploy:
             restart_policy:
                 condition: on-failure
@@ -15,14 +15,14 @@ services:
             INFLUX_URI: "http://influx:8086"
             WEBDAV_HOST: "webdav"
         ports:
-            - "8083:8080"
+            - "30000:8080"
         depends_on:
             - rabbit          
             - influx
             - cat-worker
             
     cat-worker:
-        image: cat-worker
+        image: alogo53/cat-worker
         deploy:
             restart_policy:
                 condition: on-failure      
@@ -39,19 +39,19 @@ services:
             - rabbit   
             - webdav
             
-    #prise:
-        #image: prise
-        #environment:
-            #RABBIT_HOST: "rabbit"
-            #RABBIT_PORT: "5672"
-            #RABBIT_USERNAME: "guest"
-            #RABBIT_PASSWORD: "guest"
-            #INFLUX_URI: "http://influx:8086"
-        #ports:
-            #- "8084:8080"
-        #depends_on:
-            #- rabbit   
-            #- pylog2prov
+    prise:
+        image: alogo53/prise
+        environment:
+            RABBIT_HOST: "rabbit"
+            RABBIT_PORT: "5672"
+            RABBIT_USERNAME: "guest"
+            RABBIT_PASSWORD: "guest"
+            INFLUX_URI: "http://influx:8086"
+        ports:
+            - "30001:8080"
+        depends_on:
+            - rabbit   
+            - pylog2prov
             
             
     #pylog2prov:
@@ -87,7 +87,7 @@ services:
     webdav:
         image: visity/webdav
         ports:
-            - "80:80"
+            - "30002:80"
         deploy:
             restart_policy:
                 condition: on-failure       
@@ -138,7 +138,7 @@ services:
     chronograf:
         image: chronograf
         ports:
-            - "8888:8888"
+            - "30003:8888"
         command: chronograf --influxdb-url=http://influx:8086
         depends_on:
             - influx

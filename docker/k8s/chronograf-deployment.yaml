@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: chronograf
+  name: chronograf
+spec:
+  selector:
+   matchLabels:
+    io.kompose.service: chronograf
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: chronograf
+    spec:
+      containers:
+      - args:
+        - chronograf
+        - --influxdb-url=http://influx:8086
+        image: chronograf
+        name: chronograf
+        ports:
+        - containerPort: 8888
+        resources: {}
+      restartPolicy: Always
+status: {}
