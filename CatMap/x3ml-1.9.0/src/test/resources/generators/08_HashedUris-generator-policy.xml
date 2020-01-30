@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<generator_policy>
-    
-	<generator name="LocalTermURIShorten" prefix="crm" shorten="yes">
-        <pattern>{hierarchy}/{term}</pattern>	
-    </generator>
-
-</generator_policy>

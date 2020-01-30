@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<generator_policy>
-    <generator name="E54_Dimension" prefix="id">
-        <pattern>object/{priref}/dimension/{counter_dimensionCounter}</pattern>
-    </generator>
-</generator_policy>
-

@@ -1,9 +1,0 @@
-<rdf:RDF
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:lch="http://localhost/"
-    xmlns:crm="http://www.cidoc-crm.org/cidoc-crm/"
-    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-  <crm:E22_Man-Made_Object rdf:about="http://localhost/Coin200"/>
-  <crm:E22_Man-Made_Object rdf:about="http://localhost/C100"/>
-</rdf:RDF>
