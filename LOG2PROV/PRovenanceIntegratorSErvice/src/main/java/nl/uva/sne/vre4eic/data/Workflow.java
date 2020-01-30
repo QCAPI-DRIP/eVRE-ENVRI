@@ -1,14 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nl.uva.sne.vre4eic.data;
 
-/**
- *
- * @author S. Koulouzis
- */
-public class Workflow extends SubContext {
+import java.util.Date;
 
+public class Workflow {
+    public Workflow(Date startTime, Date endTime){
+        setStartTime(startTime);
+        setEndTime(endTime);
+    }
+
+    private Date startTime, endTime;
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public String toString(){
+        return "{" + "\"startTime\":" + getStartTime().getTime() + ", "
+                + "\"endTime\":" + getEndTime().getTime()
+                + "}";
+    }
 }

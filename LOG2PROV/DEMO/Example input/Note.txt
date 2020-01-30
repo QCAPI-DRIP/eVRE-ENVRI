@@ -1,0 +1,4 @@
+I noticed that when the workflow being executed runs the exhaustive memory operations, 
+prometheus/cAdvisor crashes and temporarily stops recording performance data. 
+This is why you will sometimes see the lines in the graphs ending abruptly before continuing again. 
+I may have to decrease the intensity of the Memory exhaustion.

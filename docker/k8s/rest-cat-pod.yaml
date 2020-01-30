@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rest-cat
+  name: rest-cat
+spec:
+  containers:
+  - env:
+    - name: INFLUX_URI
+      value: http://influx:8086
+    - name: RABBIT_HOST
+      value: rabbit
+    - name: RABBIT_PASSWORD
+      value: guest
+    - name: RABBIT_PORT
+      value: "5672"
+    - name: RABBIT_USERNAME
+      value: guest
+    - name: WEBDAV_HOST
+      value: webdav
+    image: alogo53/rest-cat
+    name: rest-cat
+    ports:
+    - containerPort: 8080
+    resources: {}
+  restartPolicy: OnFailure
+status: {}

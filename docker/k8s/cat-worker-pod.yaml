@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cat-worker
+  name: cat-worker
+spec:
+  containers:
+  - env:
+    - name: INFLUX_URI
+      value: http://influx:8086
+    - name: RABBIT_HOST
+      value: rabbit
+    - name: RABBIT_PASSWORD
+      value: guest
+    - name: RABBIT_PORT
+      value: "5672"
+    - name: RABBIT_USERNAME
+      value: guest
+    - name: WEBDAV_HOST
+      value: webdav
+    - name: WEBDAV_PASSWORD
+      value: resu
+    - name: WEBDAV_USERNAME
+      value: user
+    image: alogo53/cat-worker
+    name: cat-worker
+    resources: {}
+  restartPolicy: OnFailure
+status: {}

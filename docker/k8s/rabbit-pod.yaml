@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rabbit
+  name: rabbit
+spec:
+  containers:
+  - image: rabbitmq:3-management
+    name: rabbit
+    ports:
+    - containerPort: 15672
+    - containerPort: 5672
+    resources: {}
+  restartPolicy: OnFailure
+status: {}

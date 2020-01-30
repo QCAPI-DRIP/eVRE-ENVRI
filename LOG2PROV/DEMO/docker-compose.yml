@@ -1,0 +1,14 @@
+version: '3.2'
+
+services:
+  user_gui:
+    image: eliaskhaldi/user_gui:latest
+    ports:
+    - "8081:8081"
+    depends_on:
+    - db_connector
+
+  db_connector:
+    image: eliaskhaldi/db_connector:latest
+    ports:
+    - "8080:8080"

@@ -1,7 +1,40 @@
+var wfObject;
+// Example of object:
+// {
+//     "services":[
+//        {
+//           "name":"GETIMAGE",
+//           "endpoint":"http://jang.lab130.uvalight.net:8080",
+//           "method":"GET",
+//           "startTime":1551373890583,
+//           "endTime":1551373890611,
+//           "resource":"jang.lab130.uvalight.net"
+//        },
+//        {
+//           "name":"heavy_cpu",
+//           "endpoint":"http://jang.lab130.uvalight.net:8080/exhaustCPU",
+//           "method":"POST",
+//           "startTime":1551373890618,
+//           "endTime":1551373897627,
+//           "resource":"jang.lab130.uvalight.net"
+//        },
+//        {
+//           "name":"heavy_mem",
+//           "endpoint":"http://jang.lab130.uvalight.net:8080/exhaustMEM",
+//           "method":"POST",
+//           "startTime":1551373897643,
+//           "endTime":1551373897754,
+//           "resource":"jang.lab130.uvalight.net"
+//        }
+//     ],
+//     "workflow":{
+//        "startTime":1551373890516,
+//        "endTime":1551373897762
+//     }
+//  }
+
 function getFormData(fileID, formData) {
-
     var x = document.getElementById(fileID);
-
 
     if ('files' in x) {
         for (var i = 0; i < x.files.length; i++) {
@@ -9,50 +42,68 @@ function getFormData(fileID, formData) {
             formData.append("files", file);
         }
     }
+
     return formData;
 }
 
 
 function uploadAll() {
-    document.getElementById("loader").style.display = "block";
     var formData = new FormData();
     formData = getFormData("provUpload", formData);
     formData = getFormData("serviceLogUpload", formData);
-    formData = getFormData("sysLogUpload", formData);
-
     document.getElementById('uploadBtn').disabled = true;
-    document.getElementById('source').value = '';
-
     var innerHTML = window.location.href.split('/');
     innerHTML.pop();
     innerHTML = innerHTML.join('/');
     var xhr = new XMLHttpRequest();
     xhr.open("POST", innerHTML + '/uploadFile', false);
     xhr.send(formData);
-    console.log(innerHTML);
 
-//    xhr.onload = function () {
-    if (xhr.responseText !== null || xhr.responseText.length > 0) {
-        var json = JSON.parse(xhr.responseText);
-//            console.log(json);
-//            console.log(json['workflowContext']);
-        move('1', 1, 'workflow', json);
+    wfObject = JSON.parse(xhr.responseText);
+    
+    
+    drawTable(wfObject);
+};
 
-        move('2', json['systemContext'].length, 'system', json);
+function checkAll(checked){
+    var rows = document.getElementById('output_table').rows;
+    for(var i = 0; i < rows.length; i++){
+        rows.item(i).cells[0].childNodes[0].checked = checked;
+    }
+}
 
-        var totalServices = 0;
-        for (var key in json['systemContext']) {
-            var systemContext = json['systemContext'][key];
-            totalServices += systemContext['services'].length;
-        }
+function drawTable(resultObject) {
+    var serviceArray = resultObject.services;
+    var table = document.getElementById('output_table');
+    table.setAttribute('workflow', JSON.stringify(resultObject.workflow));
+    var startTime, endTime;
 
-        move('3', totalServices, 'services', json);
+    var element, row;
+    for (var i = 0; i < serviceArray.length; i++) {
+        element = serviceArray[i];
+        element.resource = element.endpoint.replace(/:[0-9]+(?:\/.*)?/, '').replace(/http:\/\//, '');
 
+        row = table.insertRow(i + 1);
+        row.setAttribute('data-rest', element.name);
+        row.insertCell(0).innerHTML = "<input type=\"checkbox\">";
+        row.insertCell(1).innerHTML = element.name;
+        row.insertCell(2).innerHTML = element.endpoint;
+        row.insertCell(3).innerHTML = element.method;
+        row.insertCell(4).innerHTML = printTime(new Date(element.startTime));
+        row.insertCell(5).innerHTML = printTime(new Date(element.endTime));
     }
 
-//    };
+    document.getElementById('demo_output').style.display = "block";
+}
 
-document.getElementById("loader").style.display = "none";
+function printTime(timestamp) {
+    return timestamp.getFullYear() + "-" +
+        timestamp.getMonth() + "-" +
+        timestamp.getDate() + " " +
+        timestamp.getHours() + ":" +
+        timestamp.getMinutes() + ":" +
+        timestamp.getSeconds() + "." +
+        timestamp.getMilliseconds();
 }
 
 function move(docID, to, ctxName, json) {
@@ -64,11 +115,10 @@ function move(docID, to, ctxName, json) {
             clearInterval(id);
             document.getElementById("myP" + docID).className = "w3-text-green w3-animate-opacity";
             document.getElementById("myP" + docID).innerHTML = 'Successfully created ' + to + ' ' + ctxName + ' context';
-            
+
             if (docID === '3') {
                 document.getElementById('uploadBtn').disabled = false;
                 document.getElementById('source').value = JSON.stringify(json, undefined, 2);
-                prettyPrint('source');
             }
 
 
@@ -80,34 +130,4 @@ function move(docID, to, ctxName, json) {
             document.getElementById('demo' + docID).innerHTML = num;
         }
     }
-}
-
-function syntaxHighlight(json) {
-    if (typeof json != 'string') {
-        json = JSON.stringify(json, undefined, 2);
-    }
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        var cls = 'number';
-        if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-                cls = 'key';
-            } else {
-                cls = 'string';
-            }
-        } else if (/true|false/.test(match)) {
-            cls = 'boolean';
-        } else if (/null/.test(match)) {
-            cls = 'null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
-
-function prettyPrint(id) {
-    var ugly = document.getElementById(id).value;
-    var obj = JSON.parse(ugly);
-    var pretty = JSON.stringify(obj, undefined, 4);
-    document.getElementById(id).value = pretty;
 }
